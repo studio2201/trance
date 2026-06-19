@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Trance Daemon
+Comment=Background idle monitoring service for screensavers
+Exec=trance-daemon daemon
+Terminal=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
+OnlyShowIn=COSMIC;GNOME;KDE;XFCE;Unity;

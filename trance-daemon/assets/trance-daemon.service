@@ -1,0 +1,13 @@
+[Unit]
+Description=Trance Screensaver Daemon
+Documentation=https://github.com/local76/trance
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/trance-daemon daemon
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
