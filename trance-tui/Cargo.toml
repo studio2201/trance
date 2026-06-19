@@ -1,6 +1,6 @@
 [package]
 name = "trance-tui"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "trance-tui - Interactive TUI configuration manager for trance screensavers"
 license = "MIT"
@@ -33,7 +33,7 @@ assets = [
 
 [package.metadata.generate-rpm]
 name = "trance"
-version = "0.1.1"
+version = "0.1.2"
 release = "1"
 arch = "x86_64"
 summary = "trance - Interactive TUI configuration manager and idle background daemon for trance screensavers"
