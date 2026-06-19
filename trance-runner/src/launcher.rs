@@ -91,10 +91,16 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
 
             // Base release and debug workspace directories
             let dirs = vec![
+                projects.join("local76").join("trance-plugins").join("target").join("release"),
+                projects.join("local76").join("trance-plugins").join("target").join("debug"),
                 projects.join("local76").join("screensavers").join("target").join("release"),
                 projects.join("local76").join("screensavers").join("target").join("debug"),
+                projects.join("trance-plugins").join("target").join("release"),
+                projects.join("trance-plugins").join("target").join("debug"),
                 projects.join("screensavers").join("target").join("release"),
                 projects.join("screensavers").join("target").join("debug"),
+                projects.join(format!("trance-plugin-{}", clean)).join("target").join("release"),
+                projects.join(format!("trance-plugin-{}", clean)).join("target").join("debug"),
                 projects.join(format!("screensaver-{}", clean)).join("target").join("release"),
                 projects.join(format!("screensaver-{}", clean)).join("target").join("debug"),
             ];

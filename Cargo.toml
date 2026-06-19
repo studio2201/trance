@@ -3,7 +3,8 @@ resolver = "2"
 members = [
     "trance-api",
     "trance-runner",
-    "trance",
+    "trance-tui",
+    "trance-daemon",
     "trance-applet",
 ]
 

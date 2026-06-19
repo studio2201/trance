@@ -2,7 +2,7 @@
 Type=Application
 Name=Trance
 Comment=Screensaver management daemon and TUI config tool
-Exec=xterm -bg black -fg white -T "Trance" -geometry 135x40 -e trance
+Exec=xterm -bg black -fg white -T "Trance" -geometry 135x40 -e trance-tui
 Icon=trance
 Terminal=false
 Categories=Settings;DesktopSettings;

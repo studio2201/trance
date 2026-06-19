@@ -1,0 +1,46 @@
+[package]
+name = "trance-tui"
+version = "0.1.1"
+edition = "2021"
+description = "trance-tui - Interactive TUI configuration manager for trance screensavers"
+license = "MIT"
+
+[[bin]]
+name = "trance-tui"
+path = "src/main.rs"
+
+[dependencies]
+trance-runner = { path = "../trance-runner" }
+trance-api = { path = "../trance-api" }
+ratatui = { version = "0.30", default-features = false, features = ["crossterm", "termwiz"] }
+crossterm = { version = "0.28" }
+libc = "0.2"
+directories = "5"
+
+[package.metadata.deb]
+name = "trance-tui"
+maintainer = "Screensavers Developer <dev@local76.org>"
+extended-description = "Interactive TUI configuration manager for trance screensavers."
+depends = "libc6, xterm"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/trance-tui", "usr/bin/trance-tui", "755"],
+    ["assets/trance-tui.desktop", "usr/share/applications/trance-tui.desktop", "644"],
+    ["assets/trance.png", "usr/share/pixmaps/trance.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "trance-tui"
+version = "0.1.1"
+release = "1"
+arch = "x86_64"
+summary = "trance-tui - Interactive TUI configuration manager for trance screensavers"
+description = "Interactive TUI configuration manager for trance screensavers."
+license = "MIT"
+assets = [
+    { source = "target/release/trance-tui", dest = "/usr/bin/trance-tui", mode = "755" },
+    { source = "assets/trance-tui.desktop", dest = "/usr/share/applications/trance-tui.desktop", mode = "644" },
+    { source = "assets/trance.png", dest = "/usr/share/pixmaps/trance.png", mode = "644" }
+]
+

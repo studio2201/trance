@@ -1,6 +1,7 @@
-pub mod idle;
+// SPDX-License-Identifier: MIT
 
-use crate::app::AppState;
+use crate::config::DaemonConfig;
+use crate::idle::query_logind_idle;
 use trance_runner::launcher::{launch_screensaver, LaunchMode, ALLOWED_SAVERS};
 use std::fs;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -33,11 +34,10 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    println!("trance daemon running (pid {})...", std::process::id());
+    println!("trance-daemon running (pid {})...", std::process::id());
 
-    let mut state = AppState::new();
+    let mut config = DaemonConfig::load();
     let mut active_child: Option<trance_runner::launcher::ScreensaverProcess> = None;
-
     let mut tick_counter = 0;
 
     while RUNNING.load(Ordering::Relaxed) {
@@ -46,7 +46,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
 
         // Reload config every 10 seconds to detect timeout adjustments in TUI
         if tick_counter % 10 == 0 {
-            state.load_config();
+            config = DaemonConfig::load();
         }
 
         let current_time_micros = match SystemTime::now().duration_since(UNIX_EPOCH) {
@@ -54,17 +54,17 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
             Err(_) => 0,
         };
 
-        if state.idle_enabled {
-            if let Some(idle) = idle::query_logind_idle() {
+        if config.idle_enabled {
+            if let Some(idle) = query_logind_idle() {
                 if idle.is_idle && idle.idle_since_micros > 0 {
                     let elapsed_sec =
                         current_time_micros.saturating_sub(idle.idle_since_micros) / 1_000_000;
-                    let target_timeout_sec = (state.idle_timeout_mins * 60) as u64;
+                    let target_timeout_sec = (config.idle_timeout_mins * 60) as u64;
 
                     if elapsed_sec >= target_timeout_sec {
                         if active_child.is_none() {
                             // Choose a screensaver: active_saver if set, else random from allowlist
-                            let name = if let Some(ref active) = state.active_saver {
+                            let name = if let Some(ref active) = config.active_saver {
                                 active.clone()
                             } else {
                                 let mut seed = current_time_micros;
@@ -85,6 +85,14 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
                                 }
                                 Err(e) => {
                                     eprintln!("daemon failed to launch screensaver: {}", e);
+                                }
+                            }
+                        } else {
+                            // If running, verify it hasn't exited
+                            if let Some(ref mut child) = active_child {
+                                if let Ok(Some(status)) = child.try_wait() {
+                                    println!("screensaver process exited (status: {}). resetting child.", status);
+                                    active_child = None;
                                 }
                             }
                         }

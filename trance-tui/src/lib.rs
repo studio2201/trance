@@ -1,5 +1,4 @@
 pub mod app;
-pub mod daemon;
 pub mod ui;
 
 /// Returns the list of detected screensavers

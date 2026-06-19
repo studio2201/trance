@@ -1,0 +1,38 @@
+[package]
+name = "trance-daemon"
+version = "0.1.1"
+edition = "2021"
+description = "trance-daemon - Background idle monitoring service for trance screensavers"
+license = "MIT"
+
+[[bin]]
+name = "trance-daemon"
+path = "src/main.rs"
+
+[dependencies]
+trance-runner = { path = "../trance-runner" }
+trance-api = { path = "../trance-api" }
+libc = "0.2"
+
+[package.metadata.deb]
+name = "trance-daemon"
+maintainer = "Screensavers Developer <dev@local76.org>"
+extended-description = "Background idle monitoring service for trance screensavers."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/trance-daemon", "usr/bin/trance-daemon", "755"]
+]
+
+[package.metadata.generate-rpm]
+name = "trance-daemon"
+version = "0.1.1"
+release = "1"
+arch = "x86_64"
+summary = "trance-daemon - Background idle monitoring service for trance screensavers"
+description = "Background idle monitoring service for trance screensavers."
+license = "MIT"
+assets = [
+    { source = "target/release/trance-daemon", dest = "/usr/bin/trance-daemon", mode = "755" }
+]

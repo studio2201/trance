@@ -16,21 +16,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         if sub == "doctor" || sub == "--doctor" {
             let do_fix = args.iter().any(|a| a == "--fix" || a == "-f");
             println!("trance doctor: running diagnostics (fix: {})...", do_fix);
-            trance::run_diagnostics(do_fix)?;
+            trance_tui::run_diagnostics(do_fix)?;
             return Ok(());
         }
 
-        // 2. Daemon command
+        // 2. Daemon command (split out into trance-daemon)
         if sub == "daemon" || sub == "--daemon" {
-            println!("trance daemon: starting background idle monitoring service...");
-            trance::daemon::run_daemon()?;
-            return Ok(());
+            eprintln!("info: daemon service has been split out into 'trance-daemon'. Please run 'trance-daemon' instead.");
+            std::process::exit(1);
         }
 
         // 3. Ad-hoc list command
         if sub == "list" || sub == "--list" || sub == "-l" {
             println!("available screensavers:");
-            for saver in trance::list_screensavers() {
+            for saver in trance_tui::list_screensavers() {
                 println!("  - {}", saver);
             }
             return Ok(());
@@ -44,14 +43,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
             let name = &args[2];
             println!("launching screensaver '{}'...", name);
-            trance::start_screensaver(name)?;
+            trance_tui::start_screensaver(name)?;
             return Ok(());
         }
 
         // 5. Stop command
         if sub == "stop" || sub == "--stop" {
             println!("stopping active screensavers...");
-            trance::stop_screensavers()?;
+            trance_tui::stop_screensavers()?;
             return Ok(());
         }
 
@@ -86,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Default TUI execution path
     println!("trance: launching interactive tui manager (press q to quit)...");
-    trance::app::run_app()
+    trance_tui::app::run_app()
 }
 
 fn print_help() {
