@@ -15,6 +15,21 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         std::env::temp_dir().join("trance-daemon.pid")
     };
+
+    // Check if another instance is already running
+    if pid_path.exists() {
+        if let Ok(pid_str) = fs::read_to_string(&pid_path) {
+            if let Ok(pid) = pid_str.trim().parse::<i32>() {
+                unsafe {
+                    if libc::kill(pid, 0) == 0 && pid != std::process::id() as i32 {
+                        eprintln!("trance-daemon is already running (pid {}). Exiting.", pid);
+                        return Ok(());
+                    }
+                }
+            }
+        }
+    }
+
     fs::write(&pid_path, std::process::id().to_string())?;
 
     // Setup signal handler for graceful shutdown
