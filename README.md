@@ -58,6 +58,41 @@ Configuration file:
 
 ---
 
+## CLI Controller
+
+Trance provides a unified command-line tool `trance` (built from `trance-cli`) to manage, monitor, and troubleshoot the daemon and your configuration.
+
+### Core Commands
+
+| Command | Usage | Description |
+|---|---|---|
+| `status` | `trance status [--json]` | Show live daemon state (or minified JSON for scripting) |
+| `enable` / `disable` | `trance enable`, `trance disable` | Toggle idle screensaver activation |
+| `preview` | `trance preview <saver>` | Preview a screensaver immediately |
+| `stop` | `trance stop` | Stop any running preview or active screensaver |
+| `list` | `trance list` | List all installed screensavers |
+
+### Advanced CLI Capabilities
+
+* **Unified Configuration (`config`):** Get, set, or list configuration parameters directly over D-Bus:
+  * `trance config list` - List all settings.
+  * `trance config set <key> <val>` - Set a value (e.g. `trance config set idle_timeout_mins 10`).
+  * `trance config get <key>` - Retrieve a specific setting value.
+* **Interactive Mode (`interactive`):**
+  * `trance interactive` - Opens a text-based console menu wizard to control the screensaver and preview savers without typing arguments.
+* **Diagnostics & Troubleshooting (`doctor`):**
+  * `trance doctor` - Runs a local diagnostics suite checking Wayland settings, D-Bus connection, systemd service, running PID, config parsing, and monospace fonts.
+* **Sanitized Bug-Reporting (`bug-report`):**
+  * `trance bug-report` - Automatically packages diagnostic info and system logs into a sanitized markdown block (scrubbing home directories/usernames) ready for GitHub issues.
+* **Self-Update Checking (`self-update`):**
+  * `trance self-update` - Checks the local APT package policy database to alert you of new versions in the repository and displays the upgrade commands.
+* **Shell Tab-Completion (`completion`):**
+  * `trance completion bash` or `trance completion zsh` - Generates shell autocomplete scripts. Run `source <(trance completion zsh)` to enable Tab-completion for commands and screensaver names.
+* **Pruning and Cleanup (`clean`):**
+  * `trance clean` - Sweeps away stale PID files and deletes temporary local caches when the daemon is offline.
+
+---
+
 ## D-Bus API
 
 The daemon exports `com.local76.Trance` on the session bus at `/com/local76/Trance`.

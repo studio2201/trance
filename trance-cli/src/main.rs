@@ -4,7 +4,16 @@ use std::process::ExitCode;
 
 use trance_dbus::{daemon_available, TranceClient};
 
+mod bug_report;
+mod clean;
+mod completion;
+mod config;
 mod doctor;
+mod interactive;
+mod self_update;
+
+#[cfg(test)]
+mod tests;
 
 fn main() -> ExitCode {
     match run(std::env::args().skip(1).collect()) {
@@ -22,8 +31,13 @@ fn run(args: Vec<String>) -> Result<(), String> {
         return Ok(());
     }
 
-    if args[0] == "doctor" {
-        return doctor::run_doctor();
+    match args[0].as_str() {
+        "doctor" => return doctor::run_doctor(),
+        "clean" => return clean::handle_clean(),
+        "completion" => return completion::handle_completion(&args[1..]),
+        "bug-report" => return bug_report::handle_bug_report(),
+        "self-update" => return self_update::handle_self_update(),
+        _ => {}
     }
 
     let client = TranceClient::connect().map_err(|error| {
@@ -36,7 +50,9 @@ fn run(args: Vec<String>) -> Result<(), String> {
     })?;
 
     match args[0].as_str() {
-        "status" => cmd_status(&client),
+        "status" => cmd_status(&client, &args[1..]),
+        "config" => config::handle_config(&client, &args[1..]),
+        "interactive" => interactive::run_interactive(&client),
         "enable" => client.enable().map_err(map_dbus),
         "disable" => client.disable().map_err(map_dbus),
         "timeout" => cmd_timeout(&client, &args[1..]),
@@ -54,28 +70,29 @@ fn run(args: Vec<String>) -> Result<(), String> {
     }
 }
 
-fn cmd_status(client: &TranceClient) -> Result<(), String> {
+fn cmd_status(client: &TranceClient, args: &[String]) -> Result<(), String> {
     let status = client.get_status().map_err(map_dbus)?;
-    println!("running:              {}", status.running);
-    println!("idle_enabled:         {}", status.idle_enabled);
-    println!("idle_timeout_mins:    {}", status.idle_timeout_mins);
-    println!("active_saver:         {}", display_saver(&status.active_saver));
-    println!("gpu_enabled:          {}", status.gpu_enabled);
-    println!("show_fps_overlay:     {}", status.show_fps_overlay);
-    println!(
-        "render_scale:         {}",
-        if status.render_scale.is_empty() {
-            "default"
-        } else {
-            &status.render_scale
-        }
-    );
-    println!("presentation_active:  {}", status.presentation_active);
-    println!("preview_active:       {}", status.preview_active);
-    println!("current_saver:        {}", status.current_saver);
-    println!("system_idle:          {}", status.system_idle);
-    println!("session_locked:       {}", status.session_locked);
-    println!("inhibited:            {}", status.inhibited);
+    if args.first().map(String::as_str) == Some("--json") {
+        println!("{{\"running\":{},\"idle_enabled\":{},\"idle_timeout_mins\":{},\"active_saver\":\"{}\",\"gpu_enabled\":{},\"show_fps_overlay\":{},\"render_scale\":\"{}\",\"presentation_active\":{},\"preview_active\":{},\"current_saver\":\"{}\",\"system_idle\":{},\"session_locked\":{},\"inhibited\":{}}}",
+            status.running, status.idle_enabled, status.idle_timeout_mins, status.active_saver,
+            status.gpu_enabled, status.show_fps_overlay, status.render_scale, status.presentation_active,
+            status.preview_active, status.current_saver, status.system_idle, status.session_locked, status.inhibited
+        );
+    } else {
+        println!("running:              {}", status.running);
+        println!("idle_enabled:         {}", status.idle_enabled);
+        println!("idle_timeout_mins:    {}", status.idle_timeout_mins);
+        println!("active_saver:         {}", display_saver(&status.active_saver));
+        println!("gpu_enabled:          {}", status.gpu_enabled);
+        println!("show_fps_overlay:     {}", status.show_fps_overlay);
+        println!("render_scale:         {}", if status.render_scale.is_empty() { "default" } else { &status.render_scale });
+        println!("presentation_active:  {}", status.presentation_active);
+        println!("preview_active:       {}", status.preview_active);
+        println!("current_saver:        {}", status.current_saver);
+        println!("system_idle:          {}", status.system_idle);
+        println!("session_locked:       {}", status.session_locked);
+        println!("inhibited:            {}", status.inhibited);
+    }
     Ok(())
 }
 
@@ -193,7 +210,7 @@ fn print_usage() {
         "Usage: trance <command> [args]\n\
          \n\
          Commands:\n\
-           status                 Show daemon state\n\
+           status [--json]        Show daemon state\n\
            enable | disable       Toggle idle screensaver\n\
            timeout <minutes>      Set idle timeout (1–240)\n\
            saver set <name|random>\n\
@@ -203,6 +220,12 @@ fn print_usage() {
            gpu on | off | status  Toggle GPU upscaling\n\
            fps-overlay on|off|status  Toggle on-screen FPS overlay\n\
            render-scale <0.25-1.0>|default|status  Simulation grid density (zoom)\n\
-           doctor                 Run system diagnostics and verify environment\n"
+           doctor                 Run system diagnostics\n\
+           config get/set/list    Unified configuration manager\n\
+           completion bash/zsh    Generate shell tab-completion scripts\n\
+           clean                  Clean stale runs and log caches\n\
+           bug-report             Generate sanitized bug reports\n\
+           self-update            Check for package updates\n\
+           interactive            Open interactive console panel\n"
     );
 }
