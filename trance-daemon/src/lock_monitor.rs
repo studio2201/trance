@@ -19,7 +19,7 @@ pub async fn watch_session_lock(session_locked: Arc<AtomicBool>, shutdown: Arc<A
     let connection = match zbus::Connection::system().await {
         Ok(connection) => connection,
         Err(error) => {
-            eprintln!("trance-daemon: logind lock monitor unavailable: {error}");
+            tracing::error!("logind lock monitor unavailable: {error}");
             return;
         }
     };
@@ -27,14 +27,14 @@ pub async fn watch_session_lock(session_locked: Arc<AtomicBool>, shutdown: Arc<A
     let proxy = match LogindSessionProxy::new(&connection).await {
         Ok(proxy) => proxy,
         Err(error) => {
-            eprintln!("trance-daemon: logind session proxy unavailable: {error}");
+            tracing::error!("logind session proxy unavailable: {error}");
             return;
         }
     };
 
     match proxy.locked_hint().await {
         Ok(locked) => session_locked.store(locked, Ordering::Relaxed),
-        Err(error) => eprintln!("trance-daemon: failed to read LockedHint: {error}"),
+        Err(error) => tracing::error!("failed to read LockedHint: {error}"),
     }
 
     let mut stream = proxy.receive_locked_hint_changed().await;
@@ -43,7 +43,7 @@ pub async fn watch_session_lock(session_locked: Arc<AtomicBool>, shutdown: Arc<A
         match stream.next().await {
             Some(change) => match change.get().await {
                 Ok(locked) => session_locked.store(locked, Ordering::Relaxed),
-                Err(error) => eprintln!("trance-daemon: LockedHint update failed: {error}"),
+                Err(error) => tracing::error!("LockedHint update failed: {error}"),
             },
             None => break,
         }

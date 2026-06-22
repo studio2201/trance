@@ -24,9 +24,14 @@ signal-hook = "0.3"
 zbus = { workspace = true }
 futures-lite = "2.6"
 tokio = { workspace = true }
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+tracing-journald = "0.3.2"
 
 [package.metadata.deb]
 name = "trance"
+changelog = "debian/changelog"
+copyright = "2026 Screensavers Developer <dev@local76.org>"
 maintainer = "Screensavers Developer <dev@local76.org>"
 extended-description = "Background idle monitoring service for trance screensavers."
 depends = "libc6, fonts-dejavu-core, trance-plugin-beams, dbus, libvulkan1 | libgl1"
@@ -38,7 +43,8 @@ assets = [
     ["target/release/trance-daemon", "usr/bin/trance-daemon", "755"],
     ["assets/trance-daemon.service", "usr/lib/systemd/user/trance-daemon.service", "644"],
     ["assets/trance-daemon.desktop", "etc/xdg/autostart/trance-daemon.desktop", "644"],
-    ["assets/com.local76.Trance.service", "usr/share/dbus-1/services/com.local76.Trance.service", "644"]
+    ["assets/com.local76.Trance.service", "usr/share/dbus-1/services/com.local76.Trance.service", "644"],
+    ["assets/trance-daemon.1", "usr/share/man/man1/trance-daemon.1", "644"]
 ]
 
 [package.metadata.generate-rpm]
@@ -53,5 +59,6 @@ assets = [
     { source = "target/release/trance-daemon", dest = "/usr/bin/trance-daemon", mode = "755" },
     { source = "assets/trance-daemon.service", dest = "/usr/lib/systemd/user/trance-daemon.service", mode = "644" },
     { source = "assets/trance-daemon.desktop", dest = "/etc/xdg/autostart/trance-daemon.desktop", mode = "644" },
-    { source = "assets/com.local76.Trance.service", dest = "/usr/share/dbus-1/services/com.local76.Trance.service", mode = "644" }
+    { source = "assets/com.local76.Trance.service", dest = "/usr/share/dbus-1/services/com.local76.Trance.service", mode = "644" },
+    { source = "assets/trance-daemon.1", dest = "/usr/share/man/man1/trance-daemon.1", mode = "644" }
 ]

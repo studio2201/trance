@@ -48,7 +48,7 @@ impl PluginPresentation {
             if let Err(error) =
                 run_plugin_loop(&presenter_for_thread, &saver_name, &stop_flag, options)
             {
-                eprintln!("trance-daemon: plugin presentation ended: {error}");
+                tracing::error!("plugin presentation ended: {error}");
                 presenter_for_thread.hide();
             }
         });

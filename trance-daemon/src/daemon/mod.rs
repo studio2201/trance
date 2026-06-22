@@ -37,7 +37,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     {
         unsafe {
             if libc::kill(pid, 0) == 0 && pid != std::process::id() as i32 {
-                eprintln!("trance-daemon is already running (pid {pid}). Exiting.");
+                tracing::warn!("trance-daemon is already running (pid {pid}). Exiting.");
                 return Ok(());
             }
         }
@@ -57,10 +57,10 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
         Arc::clone(&controller.shutdown),
     )?;
 
-    println!("trance-daemon running (pid {})...", std::process::id());
+    tracing::info!("trance-daemon running (pid {})...", std::process::id());
     if cfg!(debug_assertions) {
-        eprintln!(
-            "trance-daemon: WARNING — debug build is very slow (~1 FPS). \
+        tracing::warn!(
+            "WARNING — debug build is very slow (~1 FPS). \
              Use target/release/trance-daemon for real performance."
         );
     }
@@ -68,7 +68,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     let dbus_controller = Arc::clone(&controller);
     let dbus_thread = std::thread::spawn(move || {
         if let Err(error) = crate::dbus_server::run(dbus_controller) {
-            eprintln!("trance-daemon: D-Bus server stopped: {error}");
+            tracing::error!("D-Bus server stopped: {error}");
         }
     });
 
@@ -76,7 +76,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     let idle_monitor = IdleMonitor::new(idle_timeout).ok_or(
         "Wayland idle monitoring is unavailable; ensure ext-idle-notify-v1 is supported",
     )?;
-    println!("trance-daemon using native Wayland idle notifier");
+    tracing::info!("using native Wayland idle notifier");
 
     if !trance_runner::cell_renderer::font_available() {
         return Err(
@@ -84,13 +84,13 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
     if let Some(path) = trance_runner::cell_renderer::resolve_font_path() {
-        println!("trance-daemon using monospace font: {path}");
+        tracing::info!("using monospace font: {path}");
     }
 
     let overlay_presenter = OverlayPresenter::new()
         .map(Arc::new)
         .ok_or("Wayland layer-shell presenter is unavailable on this compositor")?;
-    println!("trance-daemon using Wayland layer-shell presenter");
+    tracing::info!("using Wayland layer-shell presenter");
 
     let mut presentation = ActivePresentation::None;
     let mut preview_name: Option<String> = None;
@@ -179,7 +179,7 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
         } else if presentation.is_active() && !system_idle && preview_name.is_none() {
             stop_presentation(Some(&overlay_presenter), &mut presentation);
             current_saver.clear();
-            println!("system activity detected. presentation stopped.");
+            tracing::info!("system activity detected. presentation stopped.");
         } else if !config.idle_enabled && presentation.is_active() {
             stop_presentation(Some(&overlay_presenter), &mut presentation);
             current_saver.clear();
@@ -198,6 +198,6 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     stop_presentation(Some(&overlay_presenter), &mut presentation);
     let _ = fs::remove_file(pid_path);
     let _ = dbus_thread.join();
-    println!("daemon shutdown complete.");
+    tracing::info!("daemon shutdown complete.");
     Ok(())
 }

@@ -1,0 +1,11 @@
+trance (0.2.8-1) flux; urgency=medium
+
+  * Upgrade to 0.2.8 version.
+  * Integrate systemd hardening and Type=dbus activation.
+  * Fix silent daemon failure on Wayland disconnect.
+  * Implement system-wide logind idle inhibitor checks.
+  * Clean workspace compiler and clippy warnings.
+  * Improve Linux desktop categories and system compliance.
+  * Switch logs from stdout/stderr prints to structured tracing with journald support.
+
+ -- Screensavers Developer <dev@local76.org>  Sun, 21 Jun 2026 14:00:00 -1000

@@ -9,6 +9,23 @@ mod lock_monitor;
 mod presentation;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    use tracing_subscriber::prelude::*;
+
+    // Initialize tracing with journald or stderr fallback
+    if std::env::var("JOURNAL_STREAM").is_ok() {
+        let registry = tracing_subscriber::registry()
+            .with(tracing_journald::layer()?);
+        tracing::subscriber::set_global_default(registry)?;
+    } else {
+        tracing_subscriber::fmt()
+            .with_env_filter(
+                tracing_subscriber::EnvFilter::builder()
+                    .with_default_directive(tracing_subscriber::filter::LevelFilter::INFO.into())
+                    .from_env_lossy(),
+            )
+            .init();
+    }
+
     // Register visual theme and system query callbacks for dynamically loaded screensaver plugins
     let _ = trance_api::SYSTEM_INFO_CALLBACK.set(trance_runner::toolkit::sys_info::get_system_info);
     let _ =

@@ -78,8 +78,8 @@ pub fn run_frame_loop(
         if fps_report.elapsed() >= Duration::from_secs(1) {
             *achieved_fps = *frame_counter as f32 / fps_report.elapsed().as_secs_f32();
             if *frame_counter >= present_fps as u64 || fps_report.elapsed() >= Duration::from_secs(5) {
-                println!(
-                    "trance-daemon: achieved {:.1} FPS (target {:.0}, tick {:.0})",
+                tracing::info!(
+                    "achieved {:.1} FPS (target {:.0}, tick {:.0})",
                     *achieved_fps, present_fps, tick_hz
                 );
                 *frame_counter = 0;

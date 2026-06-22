@@ -52,7 +52,7 @@ async fn serve(controller: Arc<DaemonController>) -> Result<(), String> {
 
     controller.set_dbus_connection(connection.clone());
 
-    println!("trance-daemon exporting D-Bus service {SERVICE_NAME}");
+    tracing::info!("exporting D-Bus service {SERVICE_NAME}");
 
     tokio::spawn(lock_monitor::watch_session_lock(
         controller.session_locked.clone(),

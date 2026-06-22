@@ -1,0 +1,22 @@
+.TH TRANCE-DAEMON 1 "June 2026" "trance" "Trance Screensaver Daemon"
+.SH NAME
+trance-daemon \- background idle monitoring service for trance screensavers
+.SH SYNOPSIS
+.B trance-daemon
+[\fIOPTIONS\fR] [\fISUBCOMMAND\fR]
+.SH DESCRIPTION
+.B trance-daemon
+is the background idle monitoring service and D-Bus server for trance screensavers. It monitors idle state using the Wayland ext-idle-notify-v1 protocol and triggers overlay presentation using zwlr_layer_shell_v1.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help message and exit.
+.SH SUBCOMMANDS
+.TP
+.B daemon
+Run the background idle daemon (default).
+.TP
+.BI run-plugin " <saver>"
+Run a trusted screensaver plugin fullscreen.
+.SH AUTHOR
+Screensavers Developer <dev@local76.org>

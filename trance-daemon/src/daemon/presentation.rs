@@ -28,7 +28,7 @@ pub fn start_presentation(
     reason: &str,
     config: &DaemonConfig,
 ) {
-    println!("starting Wayland screensaver '{saver_name}' ({reason})...");
+    tracing::info!("starting Wayland screensaver '{saver_name}' ({reason})...");
     let launch_mode = if reason == "preview" {
         trance_runner::launcher::LaunchMode::Preview
     } else {
@@ -45,7 +45,7 @@ pub fn start_presentation(
             *current_saver = saver_name;
             *presentation = ActivePresentation::Plugin(plugin);
         }
-        Err(error) => eprintln!("trance-daemon: failed to start screensaver: {error}"),
+        Err(error) => tracing::error!("failed to start screensaver: {error}"),
     }
 }
 

@@ -30,8 +30,8 @@ pub fn run_plugin_loop(
     }
 
     for layout in &layouts {
-        println!(
-            "trance-daemon: output {} @ ({}, {}) — {}x{} @ {} Hz",
+        tracing::info!(
+            "output {} @ ({}, {}) — {}x{} @ {} Hz",
             layout.id, layout.x, layout.y, layout.width, layout.height, layout.refresh_rate_hz
         );
     }
@@ -70,8 +70,8 @@ pub fn run_plugin_loop(
     let frame_duration = Duration::from_secs_f32(1.0 / present_fps);
     session.set_simulation_rate(tick_hz);
 
-    println!(
-        "trance-daemon: running plugin '{}' on {} monitor(s) at {:.0} FPS / {:.0} tick (render scale {:.0}%, GPU: {})",
+    tracing::info!(
+        "running plugin '{}' on {} monitor(s) at {:.0} FPS / {:.0} tick (render scale {:.0}%, GPU: {})",
         saver_name,
         layouts.len(),
         present_fps,

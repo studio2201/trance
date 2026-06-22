@@ -18,6 +18,8 @@ libc = { workspace = true }
 
 [package.metadata.deb]
 name = "trance-cli"
+changelog = "debian/changelog"
+copyright = "2026 Screensavers Developer <dev@local76.org>"
 maintainer = "Screensavers Developer <dev@local76.org>"
 extended-description = "Thin CLI for controlling the trance screensaver daemon over D-Bus."
 depends = "libc6, trance"
@@ -25,4 +27,5 @@ section = "utils"
 priority = "optional"
 assets = [
     ["target/release/trance", "usr/bin/trance", "755"],
+    ["trance.1", "usr/share/man/man1/trance.1", "644"]
 ]

@@ -48,6 +48,8 @@ features = [
 
 [package.metadata.deb]
 name = "trance-applet"
+changelog = "debian/changelog"
+copyright = "2026 Screensavers Developer <dev@local76.org>"
 maintainer = "Screensavers Developer <dev@local76.org>"
 extended-description = "Native System76 COSMIC Desktop panel applet for the trance screensaver daemon."
 depends = "libc6, trance"
@@ -57,7 +59,8 @@ assets = [
     ["target/release/trance-applet", "usr/bin/trance-applet", "755"],
     ["resources/app.desktop", "usr/share/applications/com.system76.CosmicApplet.Trance.desktop", "644"],
     ["resources/app.metainfo.xml", "usr/share/metainfo/com.system76.CosmicApplet.Trance.metainfo.xml", "644"],
-    ["resources/icon.png", "usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", "644"]
+    ["resources/icon.png", "usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", "644"],
+    ["trance-applet.1", "usr/share/man/man1/trance-applet.1", "644"]
 ]
 
 [package.metadata.generate-rpm]
@@ -72,5 +75,6 @@ assets = [
     { source = "target/release/trance-applet", dest = "/usr/bin/trance-applet", mode = "755" },
     { source = "resources/app.desktop", dest = "/usr/share/applications/com.system76.CosmicApplet.Trance.desktop", mode = "644" },
     { source = "resources/app.metainfo.xml", dest = "/usr/share/metainfo/com.system76.CosmicApplet.Trance.metainfo.xml", mode = "644" },
-    { source = "resources/icon.png", dest = "/usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", mode = "644" }
+    { source = "resources/icon.png", dest = "/usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", mode = "644" },
+    { source = "trance-applet.1", dest = "/usr/share/man/man1/trance-applet.1", mode = "644" }
 ]

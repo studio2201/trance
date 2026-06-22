@@ -11,6 +11,8 @@ crate-type = ["rlib"]
 
 [package.metadata.deb]
 name = "trance-plugins-all"
+changelog = "debian/changelog"
+copyright = "2026 Screensavers Developer <dev@local76.org>"
 maintainer = "Screensavers Developer <dev@local76.org>"
 extended-description = "Convenience meta package that recommends the optional trance screensaver plugins. The stock beams effect ships with the core trance package."
 depends = "trance"

@@ -17,7 +17,7 @@ pub async fn watch_inhibitor_clients(
     let dbus = match DBusProxy::new(&connection).await {
         Ok(proxy) => proxy,
         Err(error) => {
-            eprintln!("trance-daemon: failed to watch inhibitor clients: {error}");
+            tracing::error!("failed to watch inhibitor clients: {error}");
             return;
         }
     };
@@ -25,7 +25,7 @@ pub async fn watch_inhibitor_clients(
     let mut stream = match dbus.receive_name_owner_changed().await {
         Ok(stream) => stream,
         Err(error) => {
-            eprintln!("trance-daemon: failed to subscribe to NameOwnerChanged: {error}");
+            tracing::error!("failed to subscribe to NameOwnerChanged: {error}");
             return;
         }
     };
