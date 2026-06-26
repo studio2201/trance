@@ -1,0 +1,22 @@
+# Clippy configuration for the UberMetroid companion apps.
+# Enforce a moderate strictness level without going overboard on pedantic lints.
+
+# Avoid suggesting disallowed names that conflict with established conventions
+# in this codebase (e.g., "Backend" as a binary name).
+disallowed-names = []
+
+# Allow-expressions in statements: not used here, keep default.
+allow-expect-in-tests = true
+allow-unwrap-in-tests = true
+
+# Cognitive complexity threshold.
+cognitive-complexity-threshold = 30
+
+# Maximum size for a single function (lines).
+too-many-lines-threshold = 150
+
+# Maximum number of arguments.
+too-many-arguments-threshold = 8
+
+# Maximum number of lines for a single match arm.
+too-long-match-arm-threshold = 80
