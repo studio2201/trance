@@ -13,7 +13,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Initialize tracing with journald or stderr fallback
     if std::env::var("JOURNAL_STREAM").is_ok() {
+        let filter = tracing_subscriber::EnvFilter::builder()
+            .with_default_directive(tracing_subscriber::filter::LevelFilter::INFO.into())
+            .from_env_lossy();
         let registry = tracing_subscriber::registry()
+            .with(filter)
             .with(tracing_journald::layer()?);
         tracing::subscriber::set_global_default(registry)?;
     } else {
