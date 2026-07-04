@@ -166,14 +166,7 @@ pub fn upscale_letterbox(
     dst
 }
 
-fn sample_src(
-    src: &[u8],
-    width: u32,
-    height: u32,
-    x: f32,
-    y: f32,
-    filter: FilterMode,
-) -> [u8; 4] {
+fn sample_src(src: &[u8], width: u32, height: u32, x: f32, y: f32, filter: FilterMode) -> [u8; 4] {
     match filter {
         FilterMode::Nearest => sample_nearest(src, width, height, x, y),
         FilterMode::Linear => sample_bilinear(src, width, height, x, y),
@@ -217,7 +210,12 @@ fn read_pixel(src: &[u8], width: u32, x: u32, y: u32) -> [u8; 4] {
     if offset + 3 >= src.len() {
         return [0, 0, 0, 255];
     }
-    [src[offset], src[offset + 1], src[offset + 2], src[offset + 3]]
+    [
+        src[offset],
+        src[offset + 1],
+        src[offset + 2],
+        src[offset + 3],
+    ]
 }
 
 fn write_pixel(dst: &mut [u8], width: u32, x: u32, y: u32, color: [u8; 4]) {

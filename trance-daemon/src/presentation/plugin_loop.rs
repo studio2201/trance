@@ -4,8 +4,8 @@ use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 
 use trance_api::{clear_caption, clear_primary_bounds};
-use trance_upscaler::{simulation_tick_hz, target_fps};
 use trance_runner::plugin_session::PluginSession;
+use trance_upscaler::{simulation_tick_hz, target_fps};
 use wayland_present::OverlayPresenter;
 
 use super::frame_loop::run_frame_loop;
@@ -32,7 +32,12 @@ pub fn run_plugin_loop(
     for layout in &layouts {
         tracing::info!(
             "output {} @ ({}, {}) — {}x{} @ {} Hz",
-            layout.id, layout.x, layout.y, layout.width, layout.height, layout.refresh_rate_hz
+            layout.id,
+            layout.x,
+            layout.y,
+            layout.width,
+            layout.height,
+            layout.refresh_rate_hz
         );
     }
 
@@ -53,7 +58,13 @@ pub fn run_plugin_loop(
     let (min_x, min_y, total_w, total_h) = virtual_desktop(&layouts);
     let (virtual_cols, virtual_rows) = span_simulation_grid(&session, total_w, total_h);
     let primary_bounds = primary_bounds_in_grid(
-        primary, min_x, min_y, total_w, total_h, virtual_cols, virtual_rows,
+        primary,
+        min_x,
+        min_y,
+        total_w,
+        total_h,
+        virtual_cols,
+        virtual_rows,
     );
     trance_api::publish_primary_bounds(primary_bounds);
     install_primary_bounds_callback(primary_bounds, virtual_cols, virtual_rows);
@@ -77,7 +88,11 @@ pub fn run_plugin_loop(
         present_fps,
         tick_hz,
         session.render_scale() * 100.0,
-        if session.using_gpu_upscale() { "yes" } else { "no" }
+        if session.using_gpu_upscale() {
+            "yes"
+        } else {
+            "no"
+        }
     );
 
     let mut last_frame = Instant::now();

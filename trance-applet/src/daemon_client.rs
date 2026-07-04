@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use trance_dbus::{daemon_available, DaemonStatus, TranceClient};
+use trance_dbus::{DaemonStatus, TranceClient, daemon_available};
 
 pub fn is_running() -> bool {
     daemon_available()
@@ -40,8 +40,6 @@ pub fn set_show_fps_overlay(enabled: bool) -> Result<(), String> {
         .set_show_fps_overlay(enabled)
         .map_err(|error| error.to_string())
 }
-
-
 
 pub fn list_savers() -> Result<Vec<String>, String> {
     TranceClient::connect()

@@ -3,7 +3,7 @@
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use trance_runner::launcher::{is_allowed_saver, ALLOWED_SAVERS};
+use trance_runner::launcher::{ALLOWED_SAVERS, is_allowed_saver};
 use wayland_present::OverlayPresenter;
 
 use crate::config::DaemonConfig;
@@ -69,7 +69,11 @@ pub fn current_time_micros() -> u64 {
 }
 
 pub fn pick_saver_name(config: &DaemonConfig, seed_micros: u64) -> String {
-    if let Some(active) = config.active_saver.as_deref().filter(|&s| is_allowed_saver(s)) {
+    if let Some(active) = config
+        .active_saver
+        .as_deref()
+        .filter(|&s| is_allowed_saver(s))
+    {
         return active.to_string();
     }
 

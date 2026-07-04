@@ -1,8 +1,8 @@
 //! Cross-platform screensaver runtime host.
 //! Vendored from `runner::trance_runner`.
 
-use crate::core::screensaver::Screensaver;
 use crate::core::TerminalCell;
+use crate::core::screensaver::Screensaver;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
@@ -15,7 +15,7 @@ mod renderer;
 #[path = "terminal_guard.rs"]
 mod terminal_guard;
 
-pub use args::{parse_args, print_usage, Mode};
+pub use args::{Mode, parse_args, print_usage};
 
 static SHUTDOWN: AtomicBool = AtomicBool::new(false);
 

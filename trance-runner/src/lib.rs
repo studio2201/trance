@@ -17,10 +17,10 @@
 //! - [`trance_runner`] — fullscreen plugin runner for manual testing
 
 pub mod apps;
+pub mod caption_overlay;
 pub mod cell_renderer;
 pub mod core;
 pub mod discovery;
-pub mod caption_overlay;
 pub mod fps_overlay;
 pub mod launcher;
 pub mod plugin_session;

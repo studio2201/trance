@@ -6,8 +6,8 @@ mod auth;
 mod service;
 mod watchers;
 
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 use trance_dbus::{OBJECT_PATH, SERVICE_NAME};
@@ -86,7 +86,9 @@ pub async fn emit_status_changes(
     while !shutdown.load(Ordering::Relaxed) {
         match receiver.recv_timeout(Duration::from_millis(200)) {
             Ok(status) => {
-                if let Ok(emitter) = zbus::object_server::SignalEmitter::new(&connection, OBJECT_PATH) {
+                if let Ok(emitter) =
+                    zbus::object_server::SignalEmitter::new(&connection, OBJECT_PATH)
+                {
                     let _ = TranceService::status_changed(&emitter, status.to_map()).await;
                 }
             }

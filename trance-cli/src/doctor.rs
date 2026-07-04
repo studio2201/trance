@@ -13,7 +13,10 @@ pub fn run_doctor() -> Result<(), String> {
     let mut failed = false;
 
     // 1. Wayland Session Check
-    match std::env::var("WAYLAND_DISPLAY").ok().filter(|s| !s.is_empty()) {
+    match std::env::var("WAYLAND_DISPLAY")
+        .ok()
+        .filter(|s| !s.is_empty())
+    {
         Some(display) => println!(" [✔] Wayland Session: WAYLAND_DISPLAY is set to '{display}'."),
         None => {
             println!(" [✗] Wayland Session: WAYLAND_DISPLAY environment variable is not set!");
@@ -44,10 +47,14 @@ pub fn run_doctor() -> Result<(), String> {
             if active {
                 println!(" [✔] Systemd Service: trance-daemon.service is active.");
             } else if dbus_ok {
-                println!(" [!] Systemd Service: Daemon is active, but systemd service is not reported active.");
+                println!(
+                    " [!] Systemd Service: Daemon is active, but systemd service is not reported active."
+                );
             } else {
                 println!(" [✗] Systemd Service: trance-daemon.service is inactive or failed.");
-                println!("     -> Fix: Start the service with: systemctl --user start trance-daemon");
+                println!(
+                    "     -> Fix: Start the service with: systemctl --user start trance-daemon"
+                );
                 failed = true;
             }
         }
@@ -64,17 +71,20 @@ pub fn run_doctor() -> Result<(), String> {
     };
     if pid_path.exists() {
         if let Ok(pid_str) = fs::read_to_string(&pid_path)
-            && let Ok(pid) = pid_str.trim().parse::<i32>() {
-                unsafe {
-                    if libc::kill(pid, 0) == 0 {
-                        println!(" [✔] Process Status: Daemon is running (PID {pid}) and responsive.");
-                    } else {
-                        println!(" [✗] Process Status: Stale PID file exists (PID {pid}), but daemon is not running.");
-                        println!("     -> Fix: Clean up stale PID or restart the daemon.");
-                        failed = true;
-                    }
+            && let Ok(pid) = pid_str.trim().parse::<i32>()
+        {
+            unsafe {
+                if libc::kill(pid, 0) == 0 {
+                    println!(" [✔] Process Status: Daemon is running (PID {pid}) and responsive.");
+                } else {
+                    println!(
+                        " [✗] Process Status: Stale PID file exists (PID {pid}), but daemon is not running."
+                    );
+                    println!("     -> Fix: Clean up stale PID or restart the daemon.");
+                    failed = true;
                 }
             }
+        }
     } else if dbus_ok {
         println!(" [!] Process Status: Connected to daemon via D-Bus, but PID file is missing.");
     } else {
@@ -90,16 +100,26 @@ pub fn run_doctor() -> Result<(), String> {
                     Ok(content) => {
                         println!(" [✔] Configuration: File found at '{}'.", path.display());
                         let line_count = content.lines().count();
-                        println!("     -> Health check: Configuration file read successfully ({} lines).", line_count);
+                        println!(
+                            "     -> Health check: Configuration file read successfully ({} lines).",
+                            line_count
+                        );
                     }
                     Err(e) => {
-                        println!(" [✗] Configuration: Found at '{}' but unreadable: {}", path.display(), e);
+                        println!(
+                            " [✗] Configuration: Found at '{}' but unreadable: {}",
+                            path.display(),
+                            e
+                        );
                         failed = true;
                     }
                 }
             } else {
                 println!(" [!] Configuration: File not found. Default settings will be used.");
-                println!("     -> Note: Config file path is expected at '{}'.", path.display());
+                println!(
+                    "     -> Note: Config file path is expected at '{}'.",
+                    path.display()
+                );
             }
         }
         None => {
@@ -128,24 +148,27 @@ pub fn run_doctor() -> Result<(), String> {
 }
 
 fn get_config_path() -> Option<PathBuf> {
-    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME").ok().filter(|s| !s.is_empty()) {
+    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME")
+        .ok()
+        .filter(|s| !s.is_empty())
+    {
         return Some(PathBuf::from(xdg_config).join("local76").join("theme.yaml"));
     }
     let home = std::env::var("HOME").ok()?;
-    Some(PathBuf::from(home).join(".config").join("local76").join("theme.yaml"))
+    Some(
+        PathBuf::from(home)
+            .join(".config")
+            .join("local76")
+            .join("theme.yaml"),
+    )
 }
 
 fn font_check_via_fc_list() -> bool {
-    let output = Command::new("fc-list")
-        .args([":mono"])
-        .output();
+    let output = Command::new("fc-list").args([":mono"]).output();
     match output {
         Ok(out) => out.status.success() && !out.stdout.is_empty(),
         Err(_) => {
-            let common_dirs = [
-                "/usr/share/fonts",
-                "/usr/local/share/fonts",
-            ];
+            let common_dirs = ["/usr/share/fonts", "/usr/local/share/fonts"];
             common_dirs.iter().any(|dir| PathBuf::from(dir).exists())
         }
     }

@@ -19,9 +19,10 @@ fn font() -> Option<&'static Font> {
     FONT.get_or_init(|| {
         for path in FONT_CANDIDATES {
             if let Ok(bytes) = std::fs::read(path)
-                && let Ok(font) = Font::from_bytes(bytes, fontdue::FontSettings::default()) {
-                    return Some(font);
-                }
+                && let Ok(font) = Font::from_bytes(bytes, fontdue::FontSettings::default())
+            {
+                return Some(font);
+            }
         }
         None
     })
@@ -140,14 +141,7 @@ fn blit_glyph(
     }
 }
 
-fn blend_pixel(
-    pixels: &mut [u8],
-    width: u32,
-    x: u32,
-    y: u32,
-    rgb: (u8, u8, u8),
-    alpha: u8,
-) {
+fn blend_pixel(pixels: &mut [u8], width: u32, x: u32, y: u32, rgb: (u8, u8, u8), alpha: u8) {
     if x >= width {
         return;
     }

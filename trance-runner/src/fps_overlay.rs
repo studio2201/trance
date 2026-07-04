@@ -3,7 +3,13 @@
 const FONT_W: u32 = 8;
 const _FONT_H: u32 = 8;
 
-pub fn draw_top_right(pixels: &mut [u8], width: u32, height: u32, label: &str, color: (u8, u8, u8)) {
+pub fn draw_top_right(
+    pixels: &mut [u8],
+    width: u32,
+    height: u32,
+    label: &str,
+    color: (u8, u8, u8),
+) {
     if width == 0 || height == 0 || label.is_empty() {
         return;
     }

@@ -30,7 +30,10 @@ impl DaemonStatus {
         map.insert("idle_enabled".into(), owned(self.idle_enabled));
         map.insert("idle_timeout_mins".into(), owned(self.idle_timeout_mins));
         map.insert("active_saver".into(), owned(self.active_saver.clone()));
-        map.insert("presentation_active".into(), owned(self.presentation_active));
+        map.insert(
+            "presentation_active".into(),
+            owned(self.presentation_active),
+        );
         map.insert("preview_active".into(), owned(self.preview_active));
         map.insert("system_idle".into(), owned(self.system_idle));
         map.insert("session_locked".into(), owned(self.session_locked));
@@ -47,5 +50,8 @@ fn owned<T>(value: T) -> OwnedValue
 where
     T: Into<Value<'static>>,
 {
-    value.into().try_into().expect("value converts to OwnedValue")
+    value
+        .into()
+        .try_into()
+        .expect("value converts to OwnedValue")
 }

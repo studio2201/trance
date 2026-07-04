@@ -17,7 +17,7 @@ mod handlers;
 mod state;
 mod thread;
 
-pub use thread::{spawn_event_thread, PresenterCommand};
+pub use thread::{PresenterCommand, spawn_event_thread};
 
 // Solid-color previews and screensaver frames share the same overlay map.
 // Configure events may arrive before the first frame submission.

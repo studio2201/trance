@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-use trance_runner::launcher::{resolve_saver_binary, sanitize_saver_name, LaunchMode};
+use trance_runner::launcher::{LaunchMode, resolve_saver_binary, sanitize_saver_name};
 
 use super::{DaemonCommand, DaemonController};
 

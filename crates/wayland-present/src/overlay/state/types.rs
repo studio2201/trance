@@ -1,21 +1,15 @@
 // SPDX-License-Identifier: MIT
 
 use std::collections::HashMap;
-use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::time::Instant;
 
-use wayland_client::protocol::{
-    wl_compositor, wl_output, wl_pointer, wl_seat, wl_shm, wl_surface,
-};
 use wayland_client::QueueHandle;
-use wayland_protocols_wlr::layer_shell::v1::client::{
-    zwlr_layer_shell_v1, zwlr_layer_surface_v1,
-};
+use wayland_client::protocol::{wl_compositor, wl_output, wl_pointer, wl_seat, wl_shm, wl_surface};
+use wayland_protocols_wlr::layer_shell::v1::client::{zwlr_layer_shell_v1, zwlr_layer_surface_v1};
 
-use wayland_protocols::wp::viewporter::client::{
-    wp_viewport, wp_viewporter,
-};
+use wayland_protocols::wp::viewporter::client::{wp_viewport, wp_viewporter};
 
 use crate::output::OutputRegistry;
 

@@ -3,8 +3,8 @@
 use std::sync::atomic::Ordering;
 
 use wayland_client::{
-    protocol::{wl_keyboard, wl_pointer, wl_seat},
     Connection, Dispatch, QueueHandle,
+    protocol::{wl_keyboard, wl_pointer, wl_seat},
 };
 
 use super::super::state::SessionState;

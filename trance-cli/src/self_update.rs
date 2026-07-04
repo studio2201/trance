@@ -42,7 +42,9 @@ fn handle_apt_update() -> Result<(), String> {
                         println!("     -> Fix: Install it with: sudo apt install trance");
                     } else if inst != cand {
                         println!(" [!] A new version is available: {inst} -> {cand}");
-                        println!("     -> Run: sudo apt update && sudo apt install --only-upgrade trance");
+                        println!(
+                            "     -> Run: sudo apt update && sudo apt install --only-upgrade trance"
+                        );
                     } else {
                         println!(" [✔] Trance is already up to date (version {inst}).");
                     }
@@ -125,7 +127,9 @@ pub fn handle_self_update() -> Result<(), String> {
         handle_dnf_update()
     } else {
         println!(" [!] Neither 'apt-cache' nor 'dnf' was found in your PATH.");
-        println!("     -> Note: Self-update checks require a supported package manager (APT or DNF).");
+        println!(
+            "     -> Note: Self-update checks require a supported package manager (APT or DNF)."
+        );
         Ok(())
     }
 }

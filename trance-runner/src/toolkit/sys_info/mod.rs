@@ -29,7 +29,7 @@ pub use monitors::{
     get_monitor_layouts, get_primary_monitor_bounds, is_secondary_monitor,
     query_monitors_from_xrandr,
 };
-pub use theme::{query_current_palette, query_dark_mode, query_system_theme, SystemTheme};
+pub use theme::{SystemTheme, query_current_palette, query_dark_mode, query_system_theme};
 pub use trance_api::MonitorCellBounds;
 
 static SYSTEM_INFO_CACHE: OnceLock<Mutex<(Option<SystemInfo>, Instant)>> = OnceLock::new();
@@ -47,9 +47,10 @@ pub fn get_system_info() -> SystemInfo {
     let cache_mutex = SYSTEM_INFO_CACHE.get_or_init(|| Mutex::new((None, Instant::now())));
     let mut cache = cache_mutex.lock().unwrap();
     if let Some(ref val) = cache.0
-        && cache.1.elapsed() < Duration::from_secs(3) {
-            return val.clone();
-        }
+        && cache.1.elapsed() < Duration::from_secs(3)
+    {
+        return val.clone();
+    }
     let val = get_system_info_raw();
     cache.0 = Some(val.clone());
     cache.1 = Instant::now();

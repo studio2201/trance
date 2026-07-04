@@ -3,9 +3,7 @@
 use std::collections::HashMap;
 
 use wayland_client::protocol::wl_surface;
-use wayland_protocols_wlr::layer_shell::v1::client::{
-    zwlr_layer_shell_v1, zwlr_layer_surface_v1,
-};
+use wayland_protocols_wlr::layer_shell::v1::client::{zwlr_layer_shell_v1, zwlr_layer_surface_v1};
 
 use crate::output::OutputLayout;
 
@@ -41,9 +39,10 @@ impl SessionState {
             output_id,
         );
 
-        let viewport = self.viewporter.as_ref().map(|vp| {
-            vp.get_viewport(&surface, &self.queue, ())
-        });
+        let viewport = self
+            .viewporter
+            .as_ref()
+            .map(|vp| vp.get_viewport(&surface, &self.queue, ()));
 
         layer_surface.set_anchor(
             zwlr_layer_surface_v1::Anchor::Top
@@ -53,9 +52,8 @@ impl SessionState {
         );
         layer_surface.set_exclusive_zone(-1);
         layer_surface.set_margin(0, 0, 0, 0);
-        layer_surface.set_keyboard_interactivity(
-            zwlr_layer_surface_v1::KeyboardInteractivity::Exclusive,
-        );
+        layer_surface
+            .set_keyboard_interactivity(zwlr_layer_surface_v1::KeyboardInteractivity::Exclusive);
         layer_surface.set_size(0, 0);
         surface.commit();
 
@@ -100,7 +98,11 @@ impl SessionState {
             .get(&output_id)
             .copied()
             .unwrap_or(60);
-        let (x, y) = self.output_origin.get(&output_id).copied().unwrap_or((0, 0));
+        let (x, y) = self
+            .output_origin
+            .get(&output_id)
+            .copied()
+            .unwrap_or((0, 0));
         self.output_registry.upsert(OutputLayout {
             id: output_id,
             width: render_w,
@@ -160,10 +162,21 @@ impl SessionState {
             height,
             &pixels,
         ) {
-            let buffer = overlay.buffer.as_ref().expect("frame buffer exists after ensure");
-            
-            let dst_w = if overlay.width > 0 { overlay.width } else { width };
-            let dst_h = if overlay.height > 0 { overlay.height } else { height };
+            let buffer = overlay
+                .buffer
+                .as_ref()
+                .expect("frame buffer exists after ensure");
+
+            let dst_w = if overlay.width > 0 {
+                overlay.width
+            } else {
+                width
+            };
+            let dst_h = if overlay.height > 0 {
+                overlay.height
+            } else {
+                height
+            };
             if let Some(viewport) = &overlay.viewport {
                 viewport.set_destination(dst_w as i32, dst_h as i32);
             }

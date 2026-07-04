@@ -35,7 +35,10 @@ impl Default for DaemonConfig {
 
 impl DaemonConfig {
     fn get_config_path() -> Option<PathBuf> {
-        if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME").ok().filter(|s| !s.is_empty()) {
+        if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME")
+            .ok()
+            .filter(|s| !s.is_empty())
+        {
             return Some(PathBuf::from(xdg_config).join("local76").join("theme.yaml"));
         }
         let home = std::env::var("HOME").ok()?;
@@ -60,7 +63,9 @@ impl DaemonConfig {
                     let val = line[idx + 1..].trim().trim_matches('"').trim_matches('\'');
                     match key {
                         "idle_timeout_mins" => {
-                            if let Some(n) = val.parse::<u32>().ok().filter(|&n| (1..=240).contains(&n)) {
+                            if let Some(n) =
+                                val.parse::<u32>().ok().filter(|&n| (1..=240).contains(&n))
+                            {
                                 config.idle_timeout_mins = n;
                             }
                         }
@@ -97,7 +102,9 @@ impl DaemonConfig {
                         "render_scale" => {
                             if val.is_empty() || val.eq_ignore_ascii_case("null") {
                                 config.render_scale = None;
-                            } else if let Some(scale) = val.parse::<f32>().ok().filter(|s| s.is_finite()) {
+                            } else if let Some(scale) =
+                                val.parse::<f32>().ok().filter(|s| s.is_finite())
+                            {
                                 config.render_scale = Some(scale.clamp(0.25, 1.0));
                             }
                         }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Mutex;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use zbus::names::UniqueName;
 

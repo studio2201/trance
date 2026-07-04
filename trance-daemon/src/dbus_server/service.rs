@@ -40,7 +40,10 @@ impl TranceService {
         self.controller
             .apply_command(DaemonCommand::Disable)
             .map_err(zbus::fdo::Error::Failed)?;
-        let _ = self.controller.command_tx.send(DaemonCommand::StopPresentation);
+        let _ = self
+            .controller
+            .command_tx
+            .send(DaemonCommand::StopPresentation);
         self.sync_config_status();
         Ok(())
     }
@@ -54,7 +57,10 @@ impl TranceService {
         self.controller
             .apply_command(DaemonCommand::SetTimeout(minutes))
             .map_err(zbus::fdo::Error::Failed)?;
-        let _ = self.controller.command_tx.send(DaemonCommand::SetTimeout(minutes));
+        let _ = self
+            .controller
+            .command_tx
+            .send(DaemonCommand::SetTimeout(minutes));
         self.sync_config_status();
         Ok(())
     }
@@ -92,7 +98,10 @@ impl TranceService {
         )
         .map_err(|error| zbus::fdo::Error::Failed(error.to_string()))?;
 
-        let _ = self.controller.command_tx.send(DaemonCommand::Preview(name.to_string()));
+        let _ = self
+            .controller
+            .command_tx
+            .send(DaemonCommand::Preview(name.to_string()));
         self.controller.mark_dirty();
         Ok(())
     }
@@ -102,7 +111,10 @@ impl TranceService {
         #[zbus(header)] header: zbus::message::Header<'_>,
     ) -> zbus::fdo::Result<()> {
         self.authorize_control(&header).await?;
-        let _ = self.controller.command_tx.send(DaemonCommand::StopPresentation);
+        let _ = self
+            .controller
+            .command_tx
+            .send(DaemonCommand::StopPresentation);
         self.controller.mark_dirty();
         Ok(())
     }
@@ -121,7 +133,10 @@ impl TranceService {
             reason.to_string(),
             sender.to_owned(),
         );
-        let _ = self.controller.command_tx.send(DaemonCommand::StopPresentation);
+        let _ = self
+            .controller
+            .command_tx
+            .send(DaemonCommand::StopPresentation);
         self.controller.mark_dirty();
         Ok(cookie)
     }

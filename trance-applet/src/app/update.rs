@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 
+use cosmic::Application;
 use cosmic::cosmic_config::{self, CosmicConfigEntry};
 use cosmic::iced::futures::SinkExt;
 use cosmic::iced::platform_specific::shell::wayland::commands::popup::{destroy_popup, get_popup};
 use cosmic::iced::{Limits, Subscription, futures, window::Id};
 use cosmic::prelude::*;
-use cosmic::Application;
 
 use super::{AppModel, Message};
 
@@ -40,11 +40,12 @@ impl AppModel {
                             std::env::temp_dir().join("trance-daemon.pid")
                         };
                         if let Ok(pid_str) = std::fs::read_to_string(&pid_path)
-                            && let Ok(pid) = pid_str.trim().parse::<i32>() {
-                                unsafe {
-                                    libc::kill(pid, libc::SIGTERM);
-                                }
+                            && let Ok(pid) = pid_str.trim().parse::<i32>()
+                        {
+                            unsafe {
+                                libc::kill(pid, libc::SIGTERM);
                             }
+                        }
                     }
                 }
             }
@@ -89,9 +90,8 @@ impl AppModel {
                 if self.local_config.idle_timeout_mins > 1 {
                     self.local_config.idle_timeout_mins -= 1;
                     if crate::daemon_client::is_running() {
-                        let _ = crate::daemon_client::set_timeout(
-                            self.local_config.idle_timeout_mins,
-                        );
+                        let _ =
+                            crate::daemon_client::set_timeout(self.local_config.idle_timeout_mins);
                     } else {
                         let _ = self.local_config.save();
                     }
@@ -101,9 +101,8 @@ impl AppModel {
                 if self.local_config.idle_timeout_mins < 120 {
                     self.local_config.idle_timeout_mins += 1;
                     if crate::daemon_client::is_running() {
-                        let _ = crate::daemon_client::set_timeout(
-                            self.local_config.idle_timeout_mins,
-                        );
+                        let _ =
+                            crate::daemon_client::set_timeout(self.local_config.idle_timeout_mins);
                     } else {
                         let _ = self.local_config.save();
                     }
@@ -140,15 +139,17 @@ impl AppModel {
                         let idx = std::time::SystemTime::now()
                             .duration_since(std::time::UNIX_EPOCH)
                             .unwrap_or_default()
-                            .as_secs() as usize % self.screensavers.len();
+                            .as_secs() as usize
+                            % self.screensavers.len();
                         self.screensavers[idx].clone()
                     }
                 });
                 let mut started_via_dbus = false;
                 if crate::daemon_client::is_running()
-                    && crate::daemon_client::start_preview(&saver).is_ok() {
-                        started_via_dbus = true;
-                    }
+                    && crate::daemon_client::start_preview(&saver).is_ok()
+                {
+                    started_via_dbus = true;
+                }
                 if !started_via_dbus {
                     let _ = std::process::Command::new("trance-runner")
                         .args(["preview", &saver])
@@ -181,9 +182,7 @@ impl AppModel {
         ])
     }
 
-    pub(crate) fn init_app(
-        core: cosmic::Core,
-    ) -> (Self, Task<cosmic::Action<Message>>) {
+    pub(crate) fn init_app(core: cosmic::Core) -> (Self, Task<cosmic::Action<Message>>) {
         let mut app = AppModel {
             core,
             config: cosmic_config::Config::new(Self::APP_ID, crate::config::Config::VERSION)

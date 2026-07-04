@@ -25,9 +25,10 @@ pub fn load_global_theme() -> (Option<(u8, u8, u8)>, Option<bool>) {
     let cache_mutex = GLOBAL_THEME_CACHE.get_or_init(|| Mutex::new((None, Instant::now())));
     let mut cache = cache_mutex.lock().unwrap();
     if let Some(ref val) = cache.0
-        && cache.1.elapsed() < Duration::from_secs(1) {
-            return *val;
-        }
+        && cache.1.elapsed() < Duration::from_secs(1)
+    {
+        return *val;
+    }
     let val = load_global_theme_raw();
     cache.0 = Some(val);
     cache.1 = Instant::now();
@@ -36,40 +37,41 @@ pub fn load_global_theme() -> (Option<(u8, u8, u8)>, Option<bool>) {
 
 fn load_global_theme_raw() -> (Option<(u8, u8, u8)>, Option<bool>) {
     if let Some(path) = get_global_theme_path()
-        && let Ok(content) = std::fs::read_to_string(path) {
-            let mut accent = None;
-            let mut dark = None;
-            for line in content.lines() {
-                let line = line.trim();
-                if line.is_empty() || line.starts_with('#') {
-                    continue;
-                }
-                if let Some(idx) = line.find(':') {
-                    let key = line[..idx].trim();
-                    let val = line[idx + 1..].trim().trim_matches('"').trim_matches('\'');
-                    match key {
-                        "accent_color" => {
-                            if !val.is_empty()
-                                && val != "none"
-                                && val.starts_with('#')
-                                && val.len() == 7
-                            {
-                                let r = u8::from_str_radix(&val[1..3], 16).unwrap_or(0);
-                                let g = u8::from_str_radix(&val[3..5], 16).unwrap_or(245);
-                                let b = u8::from_str_radix(&val[5..7], 16).unwrap_or(255);
-                                accent = Some((r, g, b));
-                            }
+        && let Ok(content) = std::fs::read_to_string(path)
+    {
+        let mut accent = None;
+        let mut dark = None;
+        for line in content.lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            if let Some(idx) = line.find(':') {
+                let key = line[..idx].trim();
+                let val = line[idx + 1..].trim().trim_matches('"').trim_matches('\'');
+                match key {
+                    "accent_color" => {
+                        if !val.is_empty()
+                            && val != "none"
+                            && val.starts_with('#')
+                            && val.len() == 7
+                        {
+                            let r = u8::from_str_radix(&val[1..3], 16).unwrap_or(0);
+                            let g = u8::from_str_radix(&val[3..5], 16).unwrap_or(245);
+                            let b = u8::from_str_radix(&val[5..7], 16).unwrap_or(255);
+                            accent = Some((r, g, b));
                         }
-                        "dark_mode" | "is_dark_mode" => {
-                            if let Ok(b) = val.parse::<bool>() {
-                                dark = Some(b);
-                            }
-                        }
-                        _ => {}
                     }
+                    "dark_mode" | "is_dark_mode" => {
+                        if let Ok(b) = val.parse::<bool>() {
+                            dark = Some(b);
+                        }
+                    }
+                    _ => {}
                 }
             }
-            return (accent, dark);
         }
+        return (accent, dark);
+    }
     (None, None)
 }

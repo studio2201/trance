@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc;
-use std::sync::Arc;
 
 use crate::wayland;
 

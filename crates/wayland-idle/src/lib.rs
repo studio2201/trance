@@ -31,18 +31,18 @@ mod tests {
     #[test]
     fn test_availability_and_fallback() {
         let backup = std::env::var("WAYLAND_DISPLAY").ok();
-        
+
         unsafe {
             std::env::remove_var("WAYLAND_DISPLAY");
         }
         assert!(!IdleMonitor::is_available());
         assert!(IdleMonitor::new(10).is_none());
-        
+
         unsafe {
             std::env::set_var("WAYLAND_DISPLAY", "wayland-mock-test-0");
         }
         assert!(IdleMonitor::is_available());
-        
+
         if let Some(val) = backup {
             unsafe {
                 std::env::set_var("WAYLAND_DISPLAY", val);

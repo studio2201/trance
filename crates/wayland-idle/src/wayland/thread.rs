@@ -2,9 +2,9 @@
 
 use std::os::fd::AsFd;
 use std::os::unix::io::AsRawFd;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::Receiver;
-use std::sync::Arc;
 use std::thread;
 
 use wayland_client::Connection;

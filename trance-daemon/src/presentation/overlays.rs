@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use trance_api::caption_text;
-use trance_runner::{caption_overlay, fps_overlay};
 use trance_runner::toolkit::theme_query;
+use trance_runner::{caption_overlay, fps_overlay};
 
 pub fn maybe_draw_overlays(
     pixels: &mut [u8],

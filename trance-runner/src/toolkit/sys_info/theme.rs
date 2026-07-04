@@ -16,9 +16,10 @@ pub fn query_dark_mode() -> bool {
     let cache_mutex = DARK_MODE_CACHE.get_or_init(|| Mutex::new((None, Instant::now())));
     let mut cache = cache_mutex.lock().unwrap();
     if let Some(val) = cache.0
-        && cache.1.elapsed() < Duration::from_secs(3) {
-            return val;
-        }
+        && cache.1.elapsed() < Duration::from_secs(3)
+    {
+        return val;
+    }
     let val = query_dark_mode_raw();
     cache.0 = Some(val);
     cache.1 = Instant::now();

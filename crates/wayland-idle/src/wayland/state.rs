@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use wayland_client::QueueHandle;
+use wayland_client::protocol::wl_seat;
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
 };
-use wayland_client::protocol::wl_seat;
 
 /// Mutable Wayland session state owned by the background event thread.
 pub struct SessionState {

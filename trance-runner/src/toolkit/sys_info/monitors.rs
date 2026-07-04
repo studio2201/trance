@@ -15,11 +15,11 @@ pub fn get_monitor_layouts(cols: usize, rows: usize) -> Vec<MonitorCellBounds> {
     let mut cache = cache_mutex.lock().unwrap();
     if let Some((ref layouts, (cached_cols, cached_rows), last_query)) = *cache
         && cached_cols == cols
-            && cached_rows == rows
-            && last_query.elapsed() < Duration::from_secs(5)
-        {
-            return layouts.clone();
-        }
+        && cached_rows == rows
+        && last_query.elapsed() < Duration::from_secs(5)
+    {
+        return layouts.clone();
+    }
 
     let mut computed_layouts = None;
     if let Some(xmonitors) = query_monitors_from_xrandr() {
@@ -112,9 +112,10 @@ type XrandrMonitorInfo = (bool, u32, u32, i32, i32);
 
 pub fn query_monitors_from_xrandr() -> Option<Vec<XrandrMonitorInfo>> {
     if let Ok(exe) = std::env::current_exe()
-        && exe.to_string_lossy().contains("/deps/") {
-            return None;
-        }
+        && exe.to_string_lossy().contains("/deps/")
+    {
+        return None;
+    }
     let output = std::process::Command::new("xrandr")
         .arg("--listmonitors")
         .output()

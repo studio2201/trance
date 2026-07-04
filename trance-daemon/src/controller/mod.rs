@@ -10,7 +10,7 @@ use std::sync::{Arc, Mutex, mpsc};
 use std::time::Duration;
 
 use trance_dbus::DaemonStatus;
-use trance_runner::launcher::{resolve_saver_binary, LaunchMode};
+use trance_runner::launcher::{LaunchMode, resolve_saver_binary};
 
 use crate::config::DaemonConfig;
 use crate::inhibit::InhibitorState;
@@ -47,10 +47,7 @@ impl DaemonController {
             running: true,
             idle_enabled: initial_config.idle_enabled,
             idle_timeout_mins: initial_config.idle_timeout_mins,
-            active_saver: initial_config
-                .active_saver
-                .clone()
-                .unwrap_or_default(),
+            active_saver: initial_config.active_saver.clone().unwrap_or_default(),
             gpu_enabled: false,
             show_fps_overlay: initial_config.show_fps_overlay,
             render_scale: initial_config
@@ -110,8 +107,7 @@ impl DaemonController {
     }
 
     pub fn take_dirty(&self) -> bool {
-        self.status_dirty
-            .swap(false, Ordering::Relaxed)
+        self.status_dirty.swap(false, Ordering::Relaxed)
     }
 }
 

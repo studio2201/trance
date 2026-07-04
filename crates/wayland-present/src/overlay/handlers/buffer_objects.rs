@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use wayland_client::{
-    protocol::{wl_buffer, wl_compositor, wl_shm, wl_shm_pool, wl_surface},
     Connection, Dispatch, QueueHandle,
+    protocol::{wl_buffer, wl_compositor, wl_shm, wl_shm_pool, wl_surface},
 };
 
 use super::super::state::SessionState;

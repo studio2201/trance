@@ -2,7 +2,7 @@
 
 use std::process::ExitCode;
 
-use trance_dbus::{daemon_available, TranceClient};
+use trance_dbus::{TranceClient, daemon_available};
 
 mod bug_report;
 mod clean;
@@ -72,19 +72,40 @@ fn run(args: Vec<String>) -> Result<(), String> {
 fn cmd_status(client: &TranceClient, args: &[String]) -> Result<(), String> {
     let status = client.get_status().map_err(map_dbus)?;
     if args.first().map(String::as_str) == Some("--json") {
-        println!("{{\"running\":{},\"idle_enabled\":{},\"idle_timeout_mins\":{},\"active_saver\":\"{}\",\"gpu_enabled\":{},\"show_fps_overlay\":{},\"render_scale\":\"{}\",\"presentation_active\":{},\"preview_active\":{},\"current_saver\":\"{}\",\"system_idle\":{},\"session_locked\":{},\"inhibited\":{}}}",
-            status.running, status.idle_enabled, status.idle_timeout_mins, status.active_saver,
-            status.gpu_enabled, status.show_fps_overlay, status.render_scale, status.presentation_active,
-            status.preview_active, status.current_saver, status.system_idle, status.session_locked, status.inhibited
+        println!(
+            "{{\"running\":{},\"idle_enabled\":{},\"idle_timeout_mins\":{},\"active_saver\":\"{}\",\"gpu_enabled\":{},\"show_fps_overlay\":{},\"render_scale\":\"{}\",\"presentation_active\":{},\"preview_active\":{},\"current_saver\":\"{}\",\"system_idle\":{},\"session_locked\":{},\"inhibited\":{}}}",
+            status.running,
+            status.idle_enabled,
+            status.idle_timeout_mins,
+            status.active_saver,
+            status.gpu_enabled,
+            status.show_fps_overlay,
+            status.render_scale,
+            status.presentation_active,
+            status.preview_active,
+            status.current_saver,
+            status.system_idle,
+            status.session_locked,
+            status.inhibited
         );
     } else {
         println!("running:              {}", status.running);
         println!("idle_enabled:         {}", status.idle_enabled);
         println!("idle_timeout_mins:    {}", status.idle_timeout_mins);
-        println!("active_saver:         {}", display_saver(&status.active_saver));
+        println!(
+            "active_saver:         {}",
+            display_saver(&status.active_saver)
+        );
         println!("gpu_enabled:          {}", status.gpu_enabled);
         println!("show_fps_overlay:     {}", status.show_fps_overlay);
-        println!("render_scale:         {}", if status.render_scale.is_empty() { "default" } else { &status.render_scale });
+        println!(
+            "render_scale:         {}",
+            if status.render_scale.is_empty() {
+                "default"
+            } else {
+                &status.render_scale
+            }
+        );
         println!("presentation_active:  {}", status.presentation_active);
         println!("preview_active:       {}", status.preview_active);
         println!("current_saver:        {}", status.current_saver);
@@ -175,7 +196,6 @@ fn cmd_render_scale(client: &TranceClient, args: &[String]) -> Result<(), String
         }
     }
 }
-
 
 fn display_saver(name: &str) -> String {
     if name.is_empty() {

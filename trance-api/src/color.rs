@@ -75,7 +75,11 @@ pub(crate) fn dim_color(color: (u8, u8, u8), factor: f32) -> (u8, u8, u8) {
     )
 }
 
-pub(crate) fn hue_rotated(color: (u8, u8, u8), delta_deg: f32, target_lightness: f32) -> (u8, u8, u8) {
+pub(crate) fn hue_rotated(
+    color: (u8, u8, u8),
+    delta_deg: f32,
+    target_lightness: f32,
+) -> (u8, u8, u8) {
     let (h, _s, _l) = rgb_to_hsl(color.0, color.1, color.2);
     let new_h = (h + delta_deg).rem_euclid(360.0);
     hsl_to_rgb(new_h, 0.95, target_lightness)

@@ -66,9 +66,15 @@ fn cached_primary_bounds_from_env() -> Option<MonitorCellBounds> {
 }
 
 fn read_primary_bounds_from_env() -> Option<MonitorCellBounds> {
-    let start_col = std::env::var("TRANCE_PRIMARY_START_COL").ok()?.parse().ok()?;
+    let start_col = std::env::var("TRANCE_PRIMARY_START_COL")
+        .ok()?
+        .parse()
+        .ok()?;
     let end_col = std::env::var("TRANCE_PRIMARY_END_COL").ok()?.parse().ok()?;
-    let start_row = std::env::var("TRANCE_PRIMARY_START_ROW").ok()?.parse().ok()?;
+    let start_row = std::env::var("TRANCE_PRIMARY_START_ROW")
+        .ok()?
+        .parse()
+        .ok()?;
     let end_row = std::env::var("TRANCE_PRIMARY_END_ROW").ok()?.parse().ok()?;
     if end_col <= start_col || end_row <= start_row {
         return None;

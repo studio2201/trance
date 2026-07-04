@@ -143,13 +143,7 @@ impl CellRenderer {
         let offset_x = width.saturating_sub(content_w) as usize / 2;
         let offset_y = height.saturating_sub(content_h) as usize / 2;
         letterbox_into(
-            &content,
-            content_w,
-            content_h,
-            width,
-            height,
-            offset_x,
-            offset_y,
+            &content, content_w, content_h, width, height, offset_x, offset_y,
         )
     }
 
@@ -332,7 +326,6 @@ impl CellRenderer {
         self.atlas_dirty
     }
 }
-
 
 fn load_monospace_font() -> Result<Vec<u8>, String> {
     let path = resolve_font_path().ok_or_else(|| {

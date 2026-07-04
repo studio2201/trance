@@ -3,9 +3,9 @@
 use std::collections::HashMap;
 use std::os::fd::AsFd;
 use std::os::unix::io::AsRawFd;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, Sender};
-use std::sync::Arc;
 use std::thread;
 
 use wayland_client::Connection;
@@ -37,7 +37,14 @@ pub fn spawn_event_thread(
     supports_scaling: Arc<AtomicBool>,
 ) {
     thread::spawn(move || {
-        if let Err(message) = run_event_loop(ready_tx, command_rx, visible, shutdown, outputs, supports_scaling) {
+        if let Err(message) = run_event_loop(
+            ready_tx,
+            command_rx,
+            visible,
+            shutdown,
+            outputs,
+            supports_scaling,
+        ) {
             eprintln!("wayland-present: {message}");
         }
         is_alive.store(false, Ordering::SeqCst);

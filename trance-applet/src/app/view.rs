@@ -7,7 +7,8 @@ use super::{AppModel, Message};
 
 impl AppModel {
     pub(crate) fn view_panel(&self) -> cosmic::Element<'_, Message> {
-        let btn = self.core
+        let btn = self
+            .core
             .applet
             .icon_button("display-symbolic")
             .on_press(Message::TogglePopup);

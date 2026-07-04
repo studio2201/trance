@@ -1,4 +1,4 @@
-use super::launcher::{is_allowed_saver, ALLOWED_SAVERS};
+use super::launcher::{ALLOWED_SAVERS, is_allowed_saver};
 use std::path::PathBuf;
 
 /// Retrieve all trusted directories where screensavers are installed or placed.
@@ -62,34 +62,35 @@ pub fn detect_screensavers() -> Vec<String> {
         if let Ok(entries) = std::fs::read_dir(dir) {
             for entry in entries.flatten() {
                 if let Ok(metadata) = entry.metadata()
-                    && metadata.is_file() {
-                        #[cfg(unix)]
+                    && metadata.is_file()
+                {
+                    #[cfg(unix)]
+                    {
+                        use std::os::unix::fs::PermissionsExt;
+                        // Check if file is executable
+                        if metadata.permissions().mode() & 0o111 != 0
+                            && let Some(name) = entry.file_name().to_str()
+                            && is_allowed_saver(name)
                         {
-                            use std::os::unix::fs::PermissionsExt;
-                            // Check if file is executable
-                            if metadata.permissions().mode() & 0o111 != 0
-                                && let Some(name) = entry.file_name().to_str()
-                                    && is_allowed_saver(name) {
-                                        let clean_name =
-                                            super::launcher::sanitize_saver_name(name).unwrap();
-                                        if !savers.contains(&clean_name) {
-                                            savers.push(clean_name);
-                                        }
-                                    }
+                            let clean_name = super::launcher::sanitize_saver_name(name).unwrap();
+                            if !savers.contains(&clean_name) {
+                                savers.push(clean_name);
+                            }
                         }
-                        #[cfg(not(unix))]
-                        {
-                            if let Some(name) = entry.file_name().to_str() {
-                                if is_allowed_saver(name) {
-                                    let clean_name =
-                                        super::launcher::sanitize_saver_name(name).unwrap();
-                                    if !savers.contains(&clean_name) {
-                                        savers.push(clean_name);
-                                    }
+                    }
+                    #[cfg(not(unix))]
+                    {
+                        if let Some(name) = entry.file_name().to_str() {
+                            if is_allowed_saver(name) {
+                                let clean_name =
+                                    super::launcher::sanitize_saver_name(name).unwrap();
+                                if !savers.contains(&clean_name) {
+                                    savers.push(clean_name);
                                 }
                             }
                         }
                     }
+                }
             }
         }
     }

@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Sender};
-use std::sync::Arc;
 use std::time::Duration;
 
 use crate::appearance::OverlayAppearance;
 use crate::output::{OutputLayout, OutputRegistry};
-use crate::overlay::{spawn_event_thread, PresenterCommand};
+use crate::overlay::{PresenterCommand, spawn_event_thread};
 
 /// Presents fullscreen Wayland overlays on top of the desktop.
 pub struct OverlayPresenter {
@@ -80,13 +80,13 @@ impl OverlayPresenter {
     }
 
     pub fn show(&self, appearance: OverlayAppearance) {
-        let _ = self.command_tx.send(PresenterCommand::ShowSolid(appearance));
+        let _ = self
+            .command_tx
+            .send(PresenterCommand::ShowSolid(appearance));
     }
 
     pub fn show_screensaver(&self) {
-        let _ = self
-            .command_tx
-            .send(PresenterCommand::ShowScreensaver);
+        let _ = self.command_tx.send(PresenterCommand::ShowScreensaver);
     }
 
     pub fn submit_frame(&self, output_id: u32, width: u32, height: u32, pixels: Vec<u8>) {

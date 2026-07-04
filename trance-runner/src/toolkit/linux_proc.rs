@@ -68,9 +68,10 @@ pub fn query_power_status_linux() -> Option<PowerStatus> {
                     }
                     "Battery" => {
                         if let Ok(cap_str) = std::fs::read_to_string(path.join("capacity"))
-                            && let Ok(pct) = cap_str.trim().parse::<u8>() {
-                                battery_percent = Some(pct);
-                            }
+                            && let Ok(pct) = cap_str.trim().parse::<u8>()
+                        {
+                            battery_percent = Some(pct);
+                        }
                     }
                     _ => {}
                 }

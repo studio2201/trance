@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use wayland_client::{
-    protocol::{wl_registry, wl_seat},
     Connection, Dispatch, QueueHandle,
+    protocol::{wl_registry, wl_seat},
 };
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,

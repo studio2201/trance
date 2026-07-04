@@ -90,10 +90,14 @@ pub fn run_frame_loop(
         let elapsed = frame_start.elapsed();
         if fps_report.elapsed() >= Duration::from_secs(1) {
             *achieved_fps = *frame_counter as f32 / fps_report.elapsed().as_secs_f32();
-            if *frame_counter >= present_fps as u64 || fps_report.elapsed() >= Duration::from_secs(5) {
+            if *frame_counter >= present_fps as u64
+                || fps_report.elapsed() >= Duration::from_secs(5)
+            {
                 tracing::info!(
                     "achieved {:.1} FPS (target {:.0}, tick {:.0})",
-                    *achieved_fps, present_fps, tick_hz
+                    *achieved_fps,
+                    present_fps,
+                    tick_hz
                 );
                 *frame_counter = 0;
                 *fps_report = Instant::now();

@@ -48,10 +48,10 @@ pub fn fill_rect(
     let mut row_pattern = vec![0u8; (limit_x - x) * 4];
     for col in 0..(limit_x - x) {
         let offset = col * 4;
-        row_pattern[offset] = color.2;     // Blue
+        row_pattern[offset] = color.2; // Blue
         row_pattern[offset + 1] = color.1; // Green
         row_pattern[offset + 2] = color.0; // Red
-        row_pattern[offset + 3] = 0xFF;    // Alpha
+        row_pattern[offset + 3] = 0xFF; // Alpha
     }
 
     for row in y..limit_y {
@@ -63,7 +63,15 @@ pub fn fill_rect(
     }
 }
 
-pub fn dim_rect(pixels: &mut [u8], width: u32, height: u32, x: usize, y: usize, w: usize, h: usize) {
+pub fn dim_rect(
+    pixels: &mut [u8],
+    width: u32,
+    height: u32,
+    x: usize,
+    y: usize,
+    w: usize,
+    h: usize,
+) {
     let limit_y = y.saturating_add(h).min(height as usize);
     let limit_x = x.saturating_add(w).min(width as usize);
     if limit_x <= x || limit_y <= y {
@@ -76,7 +84,7 @@ pub fn dim_rect(pixels: &mut [u8], width: u32, height: u32, x: usize, y: usize, 
         if row_end <= pixels.len() {
             // Process the row slice: divide color channels by 2 using bitwise shifts.
             for offset in (row_start..row_end).step_by(4) {
-                pixels[offset] >>= 1;     // Blue
+                pixels[offset] >>= 1; // Blue
                 pixels[offset + 1] >>= 1; // Green
                 pixels[offset + 2] >>= 1; // Red
             }

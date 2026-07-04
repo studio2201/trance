@@ -41,11 +41,7 @@ pub fn refresh_rate_hz() -> i32 {
             if !hdc.is_null() {
                 let rate = GetDeviceCaps(hdc, 116);
                 ReleaseDC(std::ptr::null_mut(), hdc);
-                if rate <= 0 {
-                    144
-                } else {
-                    rate
-                }
+                if rate <= 0 { 144 } else { rate }
             } else {
                 144
             }

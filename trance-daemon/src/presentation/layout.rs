@@ -119,7 +119,11 @@ pub fn primary_bounds_in_grid(
     )
 }
 
-pub fn install_primary_bounds_callback(bounds: MonitorCellBounds, initial_cols: usize, initial_rows: usize) {
+pub fn install_primary_bounds_callback(
+    bounds: MonitorCellBounds,
+    initial_cols: usize,
+    initial_rows: usize,
+) {
     let _ = PRIMARY_BOUNDS_STATE.set(RwLock::new(ScaledBoundsState {
         bounds,
         initial_cols: initial_cols.max(1),

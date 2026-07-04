@@ -5,8 +5,8 @@
 mod presentation;
 
 use std::fs;
-use std::sync::atomic::Ordering;
 use std::sync::Arc;
+use std::sync::atomic::Ordering;
 
 use wayland_idle::IdleMonitor;
 use wayland_present::OverlayPresenter;
@@ -14,15 +14,12 @@ use wayland_present::OverlayPresenter;
 use crate::config::DaemonConfig;
 use crate::controller::{DaemonCommand, DaemonController, MAIN_LOOP_INTERVAL};
 use presentation::{
-    current_time_micros, pick_saver_name, start_presentation, stop_presentation,
-    ActivePresentation,
+    ActivePresentation, current_time_micros, pick_saver_name, start_presentation, stop_presentation,
 };
 
 pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     if std::env::var("WAYLAND_DISPLAY").is_err() {
-        return Err(
-            "WAYLAND_DISPLAY is not set; trance requires a Wayland session".into(),
-        );
+        return Err("WAYLAND_DISPLAY is not set; trance requires a Wayland session".into());
     }
 
     let pid_path = if let Ok(runtime_dir) = std::env::var("XDG_RUNTIME_DIR") {
@@ -73,9 +70,8 @@ pub fn run_daemon() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let idle_timeout = controller.config.lock().unwrap().idle_timeout_mins;
-    let idle_monitor = IdleMonitor::new(idle_timeout).ok_or(
-        "Wayland idle monitoring is unavailable; ensure ext-idle-notify-v1 is supported",
-    )?;
+    let idle_monitor = IdleMonitor::new(idle_timeout)
+        .ok_or("Wayland idle monitoring is unavailable; ensure ext-idle-notify-v1 is supported")?;
     tracing::info!("using native Wayland idle notifier");
 
     if !trance_runner::cell_renderer::font_available() {

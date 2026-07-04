@@ -32,7 +32,7 @@
 pub mod client;
 pub mod status;
 
-pub use client::{daemon_available, TranceClient};
+pub use client::{TranceClient, daemon_available};
 pub use status::DaemonStatus;
 
 pub const SERVICE_NAME: &str = "com.local76.Trance";

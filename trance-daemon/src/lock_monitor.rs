@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use futures_lite::StreamExt;
 

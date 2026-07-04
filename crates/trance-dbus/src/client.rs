@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 use zbus::zvariant::OwnedValue;
 
-use crate::status::DaemonStatus;
 use crate::SERVICE_NAME;
+use crate::status::DaemonStatus;
 
 #[zbus::proxy(
     interface = "com.local76.Trance",

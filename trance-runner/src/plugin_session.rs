@@ -7,10 +7,10 @@ use std::time::Duration;
 
 use libloading::Library;
 use trance_api::{Screensaver, ScreensaverInstance, TerminalCell};
-use trance_upscaler::{resolve_render_scale, FilterMode, FrameUpscaler};
+use trance_upscaler::{FilterMode, FrameUpscaler, resolve_render_scale};
 
 use crate::cell_renderer::CellRenderer;
-use crate::launcher::{resolve_saver_binary, LaunchMode};
+use crate::launcher::{LaunchMode, resolve_saver_binary};
 
 struct PluginGuard {
     ptr: *mut ScreensaverInstance,
@@ -54,9 +54,13 @@ impl PluginSession {
         gpu_enabled: Option<bool>,
         render_scale: Option<f32>,
     ) -> Result<Self, String> {
-        let path = resolve_saver_binary(saver_name, launch_mode)
-            .map_err(|error| error.to_string())?;
-        println!("trance-runner: loading plugin '{}' from {}", saver_name, path.display());
+        let path =
+            resolve_saver_binary(saver_name, launch_mode).map_err(|error| error.to_string())?;
+        println!(
+            "trance-runner: loading plugin '{}' from {}",
+            saver_name,
+            path.display()
+        );
         Self::load_path_with_options(&path, gpu_enabled, render_scale)
     }
 
@@ -92,10 +96,10 @@ impl PluginSession {
             let lib = Library::new(path).map_err(|error| error.to_string())?;
             let create_fn: libloading::Symbol<unsafe extern "C" fn() -> *mut ScreensaverInstance> =
                 lib.get(b"create_screensaver")
-                   .map_err(|error| error.to_string())?;
+                    .map_err(|error| error.to_string())?;
             let destroy_fn: libloading::Symbol<unsafe extern "C" fn(*mut ScreensaverInstance)> =
                 lib.get(b"destroy_screensaver")
-                   .map_err(|error| error.to_string())?;
+                    .map_err(|error| error.to_string())?;
 
             let raw_ptr = create_fn();
             if raw_ptr.is_null() {
@@ -126,9 +130,13 @@ impl PluginSession {
         }
     }
 
-    pub fn render_scale(&self) -> f32 { self.render_scale }
+    pub fn render_scale(&self) -> f32 {
+        self.render_scale
+    }
 
-    pub fn using_gpu_upscale(&self) -> bool { self.upscaler.using_gpu() }
+    pub fn using_gpu_upscale(&self) -> bool {
+        self.upscaler.using_gpu()
+    }
 
     pub fn set_hardware_scaling(&mut self, enabled: bool) {
         self.hardware_scaling = enabled;
@@ -143,7 +151,8 @@ impl PluginSession {
     }
 
     pub fn grid_for_pixels(&self, width: u32, height: u32) -> (usize, usize) {
-        self.renderer.grid_for_pixels_scaled(width, height, self.render_scale)
+        self.renderer
+            .grid_for_pixels_scaled(width, height, self.render_scale)
     }
 
     pub fn init(&mut self, cols: usize, rows: usize) {
@@ -218,15 +227,7 @@ impl PluginSession {
         scanlines: bool,
     ) -> Vec<u8> {
         self.raster_viewport_internal(
-            col_start,
-            row_start,
-            cols,
-            rows,
-            grid_cols,
-            grid_rows,
-            width,
-            height,
-            scanlines,
+            col_start, row_start, cols, rows, grid_cols, grid_rows, width, height, scanlines,
         );
         let cap = self.pixel_buf.capacity();
         std::mem::replace(&mut self.pixel_buf, Vec::with_capacity(cap))
@@ -257,7 +258,6 @@ impl PluginSession {
             );
             return;
         }
-
 
         let content_w = self.renderer.content_width(cols);
         let content_h = self.renderer.content_height(rows);

@@ -77,9 +77,17 @@ pub fn handle_bug_report() -> Result<(), String> {
 }
 
 fn get_config_path() -> Option<PathBuf> {
-    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME").ok().filter(|s| !s.is_empty()) {
+    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME")
+        .ok()
+        .filter(|s| !s.is_empty())
+    {
         return Some(PathBuf::from(xdg_config).join("local76").join("theme.yaml"));
     }
     let home = std::env::var("HOME").ok()?;
-    Some(PathBuf::from(home).join(".config").join("local76").join("theme.yaml"))
+    Some(
+        PathBuf::from(home)
+            .join(".config")
+            .join("local76")
+            .join("theme.yaml"),
+    )
 }

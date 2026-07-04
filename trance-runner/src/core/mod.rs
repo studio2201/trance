@@ -17,7 +17,7 @@ pub mod logo_block;
 pub mod screen_palette;
 
 pub use trance_api::{
-    hsl_to_rgb, lerp, percentage, rgb_to_hsl, LcgRng, Screensaver, ScreensaverState, TerminalCell,
+    LcgRng, Screensaver, ScreensaverState, TerminalCell, hsl_to_rgb, lerp, percentage, rgb_to_hsl,
 };
 
 /// Compatibility namespace matching historical `core::screensaver` imports.

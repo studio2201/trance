@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
 use wayland_client::{
-    protocol::{wl_output, wl_registry, wl_seat},
     Connection, Dispatch, QueueHandle, WEnum,
+    protocol::{wl_output, wl_registry, wl_seat},
 };
 
 use crate::output::OutputLayout;
@@ -41,7 +41,8 @@ impl Dispatch<wl_registry::WlRegistry, ()> for SessionState {
                 state.viewporter = Some(registry.bind(name, version.min(1), queue, ()));
             }
             "wl_output" => {
-                let output = registry.bind::<wl_output::WlOutput, _, _>(name, version.min(4), queue, name);
+                let output =
+                    registry.bind::<wl_output::WlOutput, _, _>(name, version.min(4), queue, name);
                 state.outputs.push(OutputTarget { id: name, output });
             }
             "wl_seat" if state.seat.is_none() => {
@@ -68,22 +69,32 @@ impl Dispatch<wl_output::WlOutput, u32> for SessionState {
             state.output_origin.insert(*output_id, (x, y));
         }
 
-        if let wl_output::Event::Mode { refresh, width, height, flags, .. } = event {
+        if let wl_output::Event::Mode {
+            refresh,
+            width,
+            height,
+            flags,
+            ..
+        } = event
+        {
             let refresh_hz = (refresh.max(1000) / 1000) as u32;
             state
                 .output_refresh_hz
                 .insert(*output_id, refresh_hz.max(1));
 
             if matches!(flags, WEnum::Value(wl_output::Mode::Current)) {
-                state.output_mode_size.insert(
-                    *output_id,
-                    (width.max(0) as u32, height.max(0) as u32),
-                );
+                state
+                    .output_mode_size
+                    .insert(*output_id, (width.max(0) as u32, height.max(0) as u32));
                 if let Some(overlay) = state.overlays.get(output_id) {
                     let width = overlay.width.max(width.max(0) as u32);
                     let height = overlay.height.max(height.max(0) as u32);
                     if width > 0 && height > 0 {
-                        let (x, y) = state.output_origin.get(output_id).copied().unwrap_or((0, 0));
+                        let (x, y) = state
+                            .output_origin
+                            .get(output_id)
+                            .copied()
+                            .unwrap_or((0, 0));
                         state.output_registry.upsert(OutputLayout {
                             id: *output_id,
                             width,
@@ -99,7 +110,9 @@ impl Dispatch<wl_output::WlOutput, u32> for SessionState {
     }
 }
 
-impl Dispatch<wayland_protocols::wp::viewporter::client::wp_viewporter::WpViewporter, ()> for SessionState {
+impl Dispatch<wayland_protocols::wp::viewporter::client::wp_viewporter::WpViewporter, ()>
+    for SessionState
+{
     fn event(
         _: &mut Self,
         _: &wayland_protocols::wp::viewporter::client::wp_viewporter::WpViewporter,
@@ -111,7 +124,9 @@ impl Dispatch<wayland_protocols::wp::viewporter::client::wp_viewporter::WpViewpo
     }
 }
 
-impl Dispatch<wayland_protocols::wp::viewporter::client::wp_viewport::WpViewport, ()> for SessionState {
+impl Dispatch<wayland_protocols::wp::viewporter::client::wp_viewport::WpViewport, ()>
+    for SessionState
+{
     fn event(
         _: &mut Self,
         _: &wayland_protocols::wp::viewporter::client::wp_viewport::WpViewport,

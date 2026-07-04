@@ -3,8 +3,8 @@
 use std::os::fd::{AsFd, AsRawFd, FromRawFd, OwnedFd};
 use std::ptr;
 
-use wayland_client::protocol::{wl_buffer, wl_shm};
 use wayland_client::QueueHandle;
+use wayland_client::protocol::{wl_buffer, wl_shm};
 
 use super::state::SessionState;
 
@@ -80,9 +80,9 @@ pub fn ensure_frame_buffer(
         return false;
     }
 
-    let needs_new = existing.as_ref().is_none_or(|buffer| {
-        buffer.width != width || buffer.height != height
-    });
+    let needs_new = existing
+        .as_ref()
+        .is_none_or(|buffer| buffer.width != width || buffer.height != height);
 
     if needs_new {
         *existing = allocate_buffer(shm, queue, width, height);
