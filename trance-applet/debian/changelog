@@ -1,3 +1,9 @@
+trance-applet (0.3.12-1) flux; urgency=medium
+
+  * Upgrade to 0.3.12 version.
+
+ -- Screensavers Developer <dev@ubermetroid.org>  Sat, 04 Jul 2026 19:28:00 -1000
+
 trance-applet (0.3.11-1) flux; urgency=medium
 
   * Upgrade to 0.3.11 version.

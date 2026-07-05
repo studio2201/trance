@@ -105,21 +105,7 @@ impl TranceClient {
     }
 
     fn proxy(&self) -> zbus::Result<TranceProxyBlocking<'_>> {
-        let dbus = zbus::blocking::fdo::DBusProxy::new(&self.connection)?;
-        let use_legacy = if let Ok(name) = zbus::names::BusName::try_from(SERVICE_NAME) {
-            !dbus.name_has_owner(name).unwrap_or(false)
-        } else {
-            true
-        };
-
-        if use_legacy {
-            TranceProxyBlocking::builder(&self.connection)
-                .destination(crate::LEGACY_SERVICE_NAME)?
-                .path(crate::LEGACY_OBJECT_PATH)?
-                .build()
-        } else {
-            TranceProxyBlocking::new(&self.connection)
-        }
+        TranceProxyBlocking::new(&self.connection)
     }
 }
 
@@ -171,11 +157,6 @@ pub fn daemon_available() -> bool {
     };
     
     if let Ok(name) = zbus::names::BusName::try_from(SERVICE_NAME)
-        && dbus.name_has_owner(name).unwrap_or(false)
-    {
-        return true;
-    }
-    if let Ok(name) = zbus::names::BusName::try_from(crate::LEGACY_SERVICE_NAME)
         && dbus.name_has_owner(name).unwrap_or(false)
     {
         return true;

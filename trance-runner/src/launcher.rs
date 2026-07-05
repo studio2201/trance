@@ -54,15 +54,10 @@ fn dev_plugin_dirs(clean: &str) -> Vec<PathBuf> {
         return Vec::new();
     };
     let projects = PathBuf::from(home).join("Projects");
-    let local76_plugins = projects.join("local76").join("trance-plugins");
     let ubermetroid_plugins = projects.join("ubermetroid").join("trance-plugins");
     vec![
         ubermetroid_plugins.join("target").join("release"),
         ubermetroid_plugins.join("target").join("debug"),
-        local76_plugins.join("target").join("release"),
-        local76_plugins.join("target").join("debug"),
-        local76_plugins.join(clean).join("target").join("release"),
-        local76_plugins.join(clean).join("target").join("debug"),
         ubermetroid_plugins.join(clean).join("target").join("release"),
         ubermetroid_plugins.join(clean).join("target").join("debug"),
         projects

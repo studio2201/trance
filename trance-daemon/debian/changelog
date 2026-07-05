@@ -1,3 +1,10 @@
+trance (0.3.12-1) flux; urgency=medium
+
+  * Upgrade to 0.3.12 version.
+  * Completely remove all legacy local76 D-Bus services, fallbacks, search paths, and references.
+
+ -- Screensavers Developer <dev@ubermetroid.org>  Sat, 04 Jul 2026 19:28:00 -1000
+
 trance (0.3.11-1) flux; urgency=medium
 
   * Upgrade to 0.3.11 version.

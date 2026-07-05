@@ -191,7 +191,7 @@ impl AppModel {
                     Err((_errors, config)) => config,
                 })
                 .unwrap_or_default(),
-            local_config: crate::config::Local76Config::load(),
+            local_config: crate::config::ThemeConfig::load(),
             screensavers: trance_runner::discovery::detect_screensavers(),
             daemon_running: false,
             gpu_enabled: false,

@@ -107,7 +107,7 @@ pub fn run_plugin_fullscreen(plugin_path: &str) -> Result<isize, Box<dyn std::er
 
 fn run_fullscreen(saver: &mut dyn Screensaver) -> isize {
     // Note: Classic xscreensaver embedding support (XSCREENSAVER_WINDOW + xterm -into)
-    // has been removed. The user runs via trance-daemon fullscreen xterm or local76
+    // has been removed. The user runs via trance-daemon fullscreen xterm or ubermetroid
     // previews, which do not require X11 embedding. Raw terminal + ANSI works on
     // Wayland (via xterm under XWayland or native terminals).
 

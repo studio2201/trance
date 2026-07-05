@@ -5,7 +5,7 @@ use cosmic::iced::window::Id;
 /// Messages emitted by the application and its widgets.
 ///
 /// The update loop routes daemon-affecting toggles through D-Bus when
-/// `daemon_client::is_running()` and persists [`Local76Config`] otherwise.
+/// `daemon_client::is_running()` and persists [`ThemeConfig`] otherwise.
 #[derive(Debug, Clone)]
 pub enum Message {
     TogglePopup,

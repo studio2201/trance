@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=com.local76.Trance
-Exec=/usr/bin/trance-daemon daemon
-SystemdService=trance-daemon.service

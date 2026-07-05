@@ -11,7 +11,7 @@ pub struct Config {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct Local76Config {
+pub struct ThemeConfig {
     pub accent_color: String,
     pub idle_timeout_mins: u32,
     pub theme_idx: usize,
@@ -21,36 +21,20 @@ pub struct Local76Config {
     pub show_fps_overlay: bool,
 }
 
-impl Local76Config {
+impl ThemeConfig {
     pub fn get_config_path() -> Option<PathBuf> {
-        let get_path_for_org = |org: &str| -> Option<PathBuf> {
-            if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME")
-                && !xdg_config.is_empty()
-            {
-                return Some(PathBuf::from(xdg_config).join(org).join("theme.yaml"));
-            }
-            let home = std::env::var("HOME").ok()?;
-            Some(
-                PathBuf::from(home)
-                    .join(".config")
-                    .join(org)
-                    .join("theme.yaml"),
-            )
-        };
-
-        let new_path = get_path_for_org("ubermetroid");
-        if let Some(ref path) = new_path
-            && path.is_file()
+        if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME")
+            && !xdg_config.is_empty()
         {
-            return new_path;
+            return Some(PathBuf::from(xdg_config).join("ubermetroid").join("theme.yaml"));
         }
-        let legacy_path = get_path_for_org("local76");
-        if let Some(ref path) = legacy_path
-            && path.is_file()
-        {
-            return legacy_path;
-        }
-        new_path
+        let home = std::env::var("HOME").ok()?;
+        Some(
+            PathBuf::from(home)
+                .join(".config")
+                .join("ubermetroid")
+                .join("theme.yaml"),
+        )
     }
 
     pub fn load() -> Self {

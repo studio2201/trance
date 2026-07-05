@@ -51,7 +51,7 @@ sudo dnf check-update && sudo dnf install trance
 * **Default Active Screensaver**: `beams`
 
 Configuration file:
-`~/.config/ubermetroid/theme.yaml` (falls back to `~/.config/local76/theme.yaml` if it exists)
+`~/.config/ubermetroid/theme.yaml`
 
 ---
 
@@ -92,7 +92,7 @@ Trance provides a unified command-line tool `trance` (built from `trance-cli`) t
 
 ## D-Bus API
 
-The daemon exports `com.ubermetroid.Trance` on the session bus at `/com/ubermetroid/Trance` (and maintains backward compatibility by exporting `com.local76.Trance` at `/com/local76/Trance` for legacy clients).
+The daemon exports `com.ubermetroid.Trance` on the session bus at `/com/ubermetroid/Trance`.
 
 | Method | Description |
 |---|---|

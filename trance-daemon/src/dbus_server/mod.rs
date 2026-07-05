@@ -1,5 +1,6 @@
+// SPDX-License-Identifier: MIT
+
 mod auth;
-mod legacy;
 mod screensaver;
 mod service;
 mod watchers;
@@ -8,7 +9,7 @@ use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
-use trance_dbus::{LEGACY_OBJECT_PATH, LEGACY_SERVICE_NAME, OBJECT_PATH, SERVICE_NAME};
+use trance_dbus::{OBJECT_PATH, SERVICE_NAME};
 
 use crate::controller::DaemonController;
 use crate::lock_monitor;
@@ -45,13 +46,6 @@ async fn serve(controller: Arc<DaemonController>) -> Result<(), String> {
         )
         .map_err(|error| error.to_string())?
         .serve_at(
-            LEGACY_OBJECT_PATH,
-            legacy::TranceLegacyService {
-                controller: controller.clone(),
-            },
-        )
-        .map_err(|error| error.to_string())?
-        .serve_at(
             "/org/freedesktop/ScreenSaver",
             screensaver::ScreenSaverService {
                 controller: controller.clone(),
@@ -62,12 +56,11 @@ async fn serve(controller: Arc<DaemonController>) -> Result<(), String> {
         .await
         .map_err(|error| error.to_string())?;
 
-    let _ = connection.request_name(LEGACY_SERVICE_NAME).await;
     let _ = connection.request_name("org.freedesktop.ScreenSaver").await;
 
     controller.set_dbus_connection(connection.clone());
 
-    tracing::info!("exporting D-Bus service {SERVICE_NAME} and {LEGACY_SERVICE_NAME}");
+    tracing::info!("exporting D-Bus service {SERVICE_NAME}");
 
     tokio::spawn(lock_monitor::watch_session_lock(
         controller.session_locked.clone(),
@@ -105,11 +98,6 @@ pub async fn emit_status_changes(
                     zbus::object_server::SignalEmitter::new(&connection, OBJECT_PATH)
                 {
                     let _ = TranceService::status_changed(&emitter, status.to_map()).await;
-                }
-                if let Ok(emitter) =
-                    zbus::object_server::SignalEmitter::new(&connection, LEGACY_OBJECT_PATH)
-                {
-                    let _ = legacy::TranceLegacyService::status_changed(&emitter, status.to_map()).await;
                 }
             }
             Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {}
