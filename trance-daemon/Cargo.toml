@@ -1,6 +1,6 @@
 [package]
 name = "trance-daemon"
-version = "0.3.24"
+version = "0.3.25"
 edition = "2024"
 description = "Background idle daemon and core package for trance screensavers"
 license = "Apache-2.0"
@@ -40,7 +40,7 @@ extended-description = "Background idle monitoring service for trance screensave
 # so neither graphics runtime is required at install time. Kept `dbus`
 # (session bus) and `trance-plugin-beams` (default saver).
 depends = "libc6, fonts-dejavu-core, trance-plugin-beams, dbus"
-recommends = "trance-plugins-all, trance-applet, trance-cli"
+recommends = "trance-plugins-all, trance-applet, trance-cli, trance-tui"
 section = "utils"
 priority = "optional"
 maintainer-scripts = "debian"
@@ -77,3 +77,4 @@ trance-plugin-beams = "*"
 trance-plugins-all = "*"
 trance-applet = "*"
 trance-cli = "*"
+trance-tui = "*"
