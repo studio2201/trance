@@ -140,27 +140,35 @@ type LogindInhibitorInfo = (String, String, String, String, u32, u32);
 
 #[cfg(target_os = "linux")]
 fn check_logind_inhibited() -> bool {
-    let Ok(conn) = zbus::blocking::Connection::system() else {
-        return false;
-    };
-    let Ok(reply) = conn.call_method(
-        Some("org.freedesktop.login1"),
-        "/org/freedesktop/login1",
-        Some("org.freedesktop.login1.Manager"),
-        "ListInhibitors",
-        &(),
-    ) else {
-        return false;
-    };
-    let Ok(inhibitors): Result<Vec<LogindInhibitorInfo>, _> = reply.body().deserialize() else {
-        return false;
-    };
-    for (what, _, _, _, _, _) in inhibitors {
-        if what.split(':').any(|w| w == "idle") {
-            return true;
+    let run_blocking = || {
+        let Ok(conn) = zbus::blocking::Connection::system() else {
+            return false;
+        };
+        let Ok(reply) = conn.call_method(
+            Some("org.freedesktop.login1"),
+            "/org/freedesktop/login1",
+            Some("org.freedesktop.login1.Manager"),
+            "ListInhibitors",
+            &(),
+        ) else {
+            return false;
+        };
+        let Ok(inhibitors): Result<Vec<LogindInhibitorInfo>, _> = reply.body().deserialize() else {
+            return false;
+        };
+        for (what, _, _, _, _, _) in inhibitors {
+            if what.split(':').any(|w| w == "idle") {
+                return true;
+            }
         }
+        false
+    };
+
+    if tokio::runtime::Handle::try_current().is_ok() {
+        tokio::task::block_in_place(run_blocking)
+    } else {
+        run_blocking()
     }
-    false
 }
 
 #[cfg(not(target_os = "linux"))]
