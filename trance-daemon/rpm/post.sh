@@ -1,73 +1,98 @@
 #!/bin/sh
 # RPM %post — $1 is count of packages of this name left installed
 # (1 = fresh install, 2+ = upgrade). Always best-effort.
+#
+# Upgrades auto-reload the user service so you do not need to run systemctl.
 set -u
 
-for_each_user_session() {
-    _cb="$1"
-    command -v loginctl >/dev/null 2>&1 || return 0
-    command -v systemctl >/dev/null 2>&1 || return 0
-    loginctl list-users --no-legend 2>/dev/null | while read -r uid user _rest; do
-        case "$uid" in ''|*[!0-9]*) continue ;; esac
-        [ -n "$user" ] || continue
-        [ -d "/run/user/$uid" ] || continue
-        [ -S "/run/user/$uid/bus" ] || continue
-        "$_cb" "$uid" "$user" || true
-    done
-}
-
-_user_systemctl() {
-    _uid="$1"; _user="$2"; shift 2
-    if command -v runuser >/dev/null 2>&1; then
-        runuser -u "$_user" -- env \
-            XDG_RUNTIME_DIR="/run/user/$_uid" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
-            systemctl --user "$@" 2>/dev/null && return 0
-    fi
-    systemctl --user --machine="${_user}@" "$@" 2>/dev/null || true
-}
-
-try_reload_user_units() {
-    echo "-> daemon-reload for $2"
-    _user_systemctl "$1" "$2" daemon-reload || true
-}
-
-# If the unit is enabled for this user, always restart so upgrades leave the
-# daemon running on the new binary. try-restart alone is a no-op when the
-# unit is inactive (e.g. after an older package's preun stopped it).
-try_restart_trance() {
-    echo "-> restart trance-daemon for $2 (if enabled/active)"
-    _user_systemctl "$1" "$2" reset-failed trance-daemon.service || true
-    # is-enabled returns 0 for enabled/static/alias/indirect; we treat that
-    # as "user wants this service". Capture status without the || true mask.
-    if command -v runuser >/dev/null 2>&1; then
-        if runuser -u "$2" -- env \
-            XDG_RUNTIME_DIR="/run/user/$1" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$1/bus" \
-            systemctl --user is-enabled trance-daemon.service >/dev/null 2>&1; then
+# shellcheck disable=SC1091
+if [ -f /usr/lib/trance/user-service-lib.sh ]; then
+    # Prefer the just-installed copy.
+    . /usr/lib/trance/user-service-lib.sh
+else
+    is_desktop_uid() {
+        case "$1" in ''|*[!0-9]*) return 1 ;; esac
+        [ "$1" -ge 1000 ]
+    }
+    for_each_user_session() {
+        _cb="$1"
+        command -v loginctl >/dev/null 2>&1 || return 0
+        command -v systemctl >/dev/null 2>&1 || return 0
+        loginctl list-users --no-legend 2>/dev/null | while read -r uid user _rest; do
+            is_desktop_uid "$uid" || continue
+            [ -n "$user" ] || continue
+            [ -d "/run/user/$uid" ] || continue
+            [ -S "/run/user/$uid/bus" ] || continue
+            "$_cb" "$uid" "$user" || true
+        done
+    }
+    _user_systemctl() {
+        _uid="$1"; _user="$2"; shift 2
+        if command -v runuser >/dev/null 2>&1; then
+            runuser -u "$_user" -- env \
+                XDG_RUNTIME_DIR="/run/user/$_uid" \
+                DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
+                systemctl --user "$@" 2>/dev/null && return 0
+        fi
+        systemctl --user --machine="${_user}@" "$@" 2>/dev/null || true
+    }
+    _user_is_enabled() {
+        _uid="$1"; _user="$2"
+        if command -v runuser >/dev/null 2>&1; then
+            runuser -u "$_user" -- env \
+                XDG_RUNTIME_DIR="/run/user/$_uid" \
+                DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
+                systemctl --user is-enabled trance-daemon.service >/dev/null 2>&1
+            return $?
+        fi
+        systemctl --user --machine="${_user}@" is-enabled trance-daemon.service >/dev/null 2>&1
+    }
+    _user_is_active() {
+        _uid="$1"; _user="$2"
+        if command -v runuser >/dev/null 2>&1; then
+            runuser -u "$_user" -- env \
+                XDG_RUNTIME_DIR="/run/user/$_uid" \
+                DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
+                systemctl --user is-active trance-daemon.service >/dev/null 2>&1
+            return $?
+        fi
+        systemctl --user --machine="${_user}@" is-active trance-daemon.service >/dev/null 2>&1
+    }
+    try_reload_user_units() {
+        if _user_is_enabled "$1" "$2" || _user_is_active "$1" "$2"; then
+            _user_systemctl "$1" "$2" daemon-reload || true
+        fi
+    }
+    try_restart_trance() {
+        _user_systemctl "$1" "$2" reset-failed trance-daemon.service || true
+        if _user_is_enabled "$1" "$2"; then
+            echo "trance: applying upgrade for $2 (user service)"
             _user_systemctl "$1" "$2" restart trance-daemon.service || true
             return 0
         fi
-    elif systemctl --user --machine="${2}@" is-enabled trance-daemon.service >/dev/null 2>&1; then
-        _user_systemctl "$1" "$2" restart trance-daemon.service || true
-        return 0
-    fi
-    # Not enabled: only bounce if currently running (no surprise autostart).
-    _user_systemctl "$1" "$2" try-restart trance-daemon.service || true
-}
+        if _user_is_active "$1" "$2"; then
+            echo "trance: applying upgrade for $2 (running unit)"
+            _user_systemctl "$1" "$2" try-restart trance-daemon.service || true
+        fi
+    }
+    print_user_hint() {
+        echo "  First-time: systemctl --user enable --now trance-daemon"
+        echo "  or: trance doctor --fix"
+    }
+fi
 
-echo "trance RPM post-install (best-effort user service reload)..."
 # Remove legacy XDG autostart (systemd user unit is the only start path).
 rm -f /etc/xdg/autostart/trance-daemon.desktop 2>/dev/null || true
 
 for_each_user_session try_reload_user_units
 for_each_user_session try_restart_trance
 
-echo ""
-echo "  If the daemon is not running, as your desktop user:"
-echo "    systemctl --user enable --now trance-daemon"
-echo "    # or: trance doctor --fix"
-echo "  COSMIC panel UI (optional): dnf install trance-applet"
-echo ""
+# Fresh install ($1 == 1): print setup hint. Upgrades stay quiet.
+if [ "${1:-1}" -eq 1 ]; then
+    echo ""
+    print_user_hint
+    echo "  COSMIC panel UI (optional): dnf install trance-applet"
+    echo ""
+fi
 
 exit 0

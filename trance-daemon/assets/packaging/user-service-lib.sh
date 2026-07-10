@@ -3,7 +3,17 @@
 # All operations are best-effort: never abort package install/upgrade.
 # shellcheck disable=SC2039,SC3043
 
-# Iterate logged-in users that have a usable user bus.
+# Human (desktop) UIDs only. Skip root and system accounts — they often show
+# up in loginctl during `sudo dnf` but never run the screensaver unit.
+is_desktop_uid() {
+    case "$1" in
+        ''|*[!0-9]*) return 1 ;;
+    esac
+    # Typical SYS_UID_MAX is 999 on Fedora/Debian.
+    [ "$1" -ge 1000 ]
+}
+
+# Iterate logged-in desktop users that have a usable user bus.
 # Calls: for_each_user_session <callback>
 # callback receives: uid user
 for_each_user_session() {
@@ -13,11 +23,8 @@ for_each_user_session() {
 
     # Columns vary by systemd version; take first two tokens (uid, user).
     loginctl list-users --no-legend 2>/dev/null | while read -r uid user _rest; do
-        case "$uid" in
-            ''|*[!0-9]*) continue ;;
-        esac
+        is_desktop_uid "$uid" || continue
         [ -n "$user" ] || continue
-        # Skip system-ish accounts without a session runtime.
         [ -d "/run/user/$uid" ] || continue
         [ -S "/run/user/$uid/bus" ] || continue
         "$_cb" "$uid" "$user" || true
@@ -37,48 +44,68 @@ _user_systemctl() {
     systemctl --user --machine="${_user}@" "$@" 2>/dev/null || true
 }
 
+_user_is_enabled() {
+    _uid="$1"
+    _user="$2"
+    if command -v runuser >/dev/null 2>&1; then
+        runuser -u "$_user" -- env \
+            XDG_RUNTIME_DIR="/run/user/$_uid" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
+            systemctl --user is-enabled trance-daemon.service >/dev/null 2>&1
+        return $?
+    fi
+    systemctl --user --machine="${_user}@" is-enabled trance-daemon.service >/dev/null 2>&1
+}
+
+_user_is_active() {
+    _uid="$1"
+    _user="$2"
+    if command -v runuser >/dev/null 2>&1; then
+        runuser -u "$_user" -- env \
+            XDG_RUNTIME_DIR="/run/user/$_uid" \
+            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
+            systemctl --user is-active trance-daemon.service >/dev/null 2>&1
+        return $?
+    fi
+    systemctl --user --machine="${_user}@" is-active trance-daemon.service >/dev/null 2>&1
+}
+
 try_reload_user_units() {
     _uid="$1"
     _user="$2"
-    echo "-> daemon-reload for ${_user} (uid ${_uid})"
-    _user_systemctl "$_uid" "$_user" daemon-reload || true
+    # Quiet: only reload when the unit is enabled or running for this user.
+    if _user_is_enabled "$_uid" "$_user" || _user_is_active "$_uid" "$_user"; then
+        _user_systemctl "$_uid" "$_user" daemon-reload || true
+    fi
 }
 
 try_stop_trance() {
     _uid="$1"
     _user="$2"
-    echo "-> try-stop trance-daemon for ${_user}"
     _user_systemctl "$_uid" "$_user" stop trance-daemon.service || true
 }
 
-# If enabled for this user, always restart (upgrades must leave the daemon
-# running on the new binary). try-restart alone is a no-op when inactive.
+# Apply upgrade: load new binary without the user running systemctl.
+# Enabled → restart (or start if dead). Active-but-not-enabled → try-restart.
 try_restart_trance() {
     _uid="$1"
     _user="$2"
-    echo "-> restart trance-daemon for ${_user} (if enabled/active)"
     _user_systemctl "$_uid" "$_user" reset-failed trance-daemon.service || true
-    if command -v runuser >/dev/null 2>&1; then
-        if runuser -u "$_user" -- env \
-            XDG_RUNTIME_DIR="/run/user/$_uid" \
-            DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$_uid/bus" \
-            systemctl --user is-enabled trance-daemon.service >/dev/null 2>&1; then
-            _user_systemctl "$_uid" "$_user" restart trance-daemon.service || true
-            return 0
-        fi
-    elif systemctl --user --machine="${_user}@" is-enabled trance-daemon.service >/dev/null 2>&1; then
+    if _user_is_enabled "$_uid" "$_user"; then
+        echo "trance: applying upgrade for ${_user} (user service)"
         _user_systemctl "$_uid" "$_user" restart trance-daemon.service || true
         return 0
     fi
-    _user_systemctl "$_uid" "$_user" try-restart trance-daemon.service || true
+    if _user_is_active "$_uid" "$_user"; then
+        echo "trance: applying upgrade for ${_user} (running unit)"
+        _user_systemctl "$_uid" "$_user" try-restart trance-daemon.service || true
+    fi
 }
 
 print_user_hint() {
     echo ""
     echo "  Note: trance-daemon is a *user* systemd service."
-    echo "  If the screensaver is not running after install/upgrade, as your"
-    echo "  desktop user run:"
-    echo "    systemctl --user daemon-reload"
+    echo "  If the screensaver is not running after install, as your desktop user:"
     echo "    systemctl --user enable --now trance-daemon"
     echo "  or:  trance doctor --fix"
     echo ""
