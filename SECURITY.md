@@ -22,8 +22,11 @@
 
 ## Reporting a Vulnerability
 
-Please report security vulnerabilities via GitHub Issues or email the maintainer
-directly. Do not disclose vulnerabilities publicly until a fix is available.
+Prefer [GitHub private vulnerability reporting](https://github.com/crateria/trance/security/advisories/new).
+
+Do not disclose vulnerabilities publicly until a fix is available.
 
 We aim to acknowledge reports within 72 hours and provide a fix or mitigation
 within 30 days for critical issues.
+
+Org-wide policy: https://github.com/crateria/.github/blob/main/SECURITY.md
