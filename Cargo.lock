@@ -5681,7 +5681,7 @@ dependencies = [
  "libc",
  "libloading 0.9.0",
  "sysinfo",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
  "tracing",
  "tracing-subscriber",
  "trance-api",

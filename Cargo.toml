@@ -34,7 +34,7 @@ wayland-present = { path = "crates/wayland-present" }
 
 # Added in 2026 audit remediation
 anyhow = "1"
-thiserror = "1"
+thiserror = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
 tracing-journald = "0.3"
