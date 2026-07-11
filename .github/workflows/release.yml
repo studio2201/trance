@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     steps:
       - name: Checkout code
         run: |
@@ -70,6 +71,18 @@ jobs:
           cargo generate-rpm -p trance-applet
           cargo generate-rpm -p trance-tui
 
+      - name: Install Cosign
+        run: |
+          curl -Lo cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
+          chmod +x cosign
+          sudo mv cosign /usr/local/bin/
+
+      - name: Sign packages with Cosign
+        run: |
+          for file in target/debian/*.deb target/generate-rpm/*.rpm; do
+            cosign sign-blob --yes --output-signature "${file}.sig" --output-certificate "${file}.pem" "$file"
+          done
+
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -78,4 +91,8 @@ jobs:
             --title "${{ github.ref_name }}" \
             --notes "Release ${{ github.ref_name }}" \
             target/debian/*.deb \
-            target/generate-rpm/*.rpm
+            target/debian/*.sig \
+            target/debian/*.pem \
+            target/generate-rpm/*.rpm \
+            target/generate-rpm/*.sig \
+            target/generate-rpm/*.pem
