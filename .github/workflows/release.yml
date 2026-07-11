@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        run: |
+          git init
+          git remote add origin https://github.com/crateria/trance.git
+          git fetch --depth=1 origin ${{ github.ref }}
+          git reset --hard FETCH_HEAD
+
+      - name: Install system libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libdbus-1-dev pkg-config \
+            libwayland-dev libxkbcommon-dev \
+            libssl-dev
+
+      - name: Install Rust (from rust-toolchain.toml)
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+            sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          rustup show
+          rustc --version
+
+      - name: Install cargo-binstall
+        run: |
+          curl -L --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Install cargo-deb and cargo-generate-rpm
+        run: |
+          cargo binstall -y cargo-deb cargo-generate-rpm
+
+      - name: Build release binaries
+        run: |
+          cargo build --release
+
+      - name: Package crates
+        run: |
+          cargo deb --no-build -p trance-daemon
+          cargo deb --no-build -p trance-cli
+          cargo deb --no-build -p trance-plugins-all
+          cargo deb --no-build -p trance-applet
+          cargo deb --no-build -p trance-tui
+          cargo generate-rpm -p trance-daemon
+          cargo generate-rpm -p trance-cli
+          cargo generate-rpm -p trance-plugins-all
+          cargo generate-rpm -p trance-applet
+          cargo generate-rpm -p trance-tui
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes "Release ${{ github.ref_name }}" \
+            target/debian/*.deb \
+            target/generate-rpm/*.rpm

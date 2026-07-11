@@ -45,6 +45,61 @@ exceptions = [
     # then these surface as errors here and are documented as a known gap.
 ]
 
+[[licenses.clarify]]
+name = "xdg-shell-wrapper-config"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "dnd"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "iced_accessibility"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "mime"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "libcosmic"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-config"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-panel-config"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-theme"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-config-derive"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-settings-daemon"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "apply"
+expression = "GPL-3.0-only"
+license-files = []
+
 [bans]
 multiple-versions = "warn"
 deny = []

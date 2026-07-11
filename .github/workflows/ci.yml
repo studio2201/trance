@@ -24,49 +24,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Cache cargo registry + deny binary
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cargo/registry/index
-            ~/.cargo/registry/cache
-            ~/.cargo/git
-            ~/.cargo/bin/cargo-deny
-          key: ${{ runner.os }}-deny-${{ env.CARGO_DENY_VERSION }}-${{ hashFiles('**/Cargo.lock', 'deny.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-deny-${{ env.CARGO_DENY_VERSION }}-
-            ${{ runner.os }}-deny-
+      - name: Checkout code
+        run: |
+          git init
+          git remote add origin https://github.com/crateria/trance.git
+          git fetch --depth=1 origin ${{ github.sha }}
+          git reset --hard FETCH_HEAD
 
       - name: Install Rust (from rust-toolchain.toml)
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          # Installs the pin in rust-toolchain.toml
           rustup show
           rustc --version
           cargo --version
 
       - name: Install cargo-deny
         run: |
-          if ! command -v cargo-deny >/dev/null 2>&1; then
-            cargo install cargo-deny --locked --version "${CARGO_DENY_VERSION}"
-          else
-            cargo-deny --version
-          fi
+          mkdir -p ~/.cargo/bin
+          curl -sSL https://github.com/EmbarkStudios/cargo-deny/releases/download/${{ env.CARGO_DENY_VERSION }}/cargo-deny-${{ env.CARGO_DENY_VERSION }}-x86_64-unknown-linux-musl.tar.gz | tar -xz --strip-components=1 -C ~/.cargo/bin
+          chmod +x ~/.cargo/bin/cargo-deny
+          cargo-deny --version
 
-      - name: cargo deny check advisories
-        run: cargo deny check advisories
+      - name: cargo deny check
+        run: cargo-deny check
 
   test:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - name: Checkout code
+        run: |
+          git init
+          git remote add origin https://github.com/crateria/trance.git
+          git fetch --depth=1 origin ${{ github.sha }}
+          git reset --hard FETCH_HEAD
 
       - name: Install system libraries
         run: |
@@ -76,24 +69,18 @@ jobs:
             libwayland-dev libxkbcommon-dev \
             libssl-dev
 
-      - name: Cache cargo + build
-        uses: actions/cache@v5
-        with:
-          path: |
-            ~/.cargo/registry/index
-            ~/.cargo/registry/cache
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-test-${{ hashFiles('**/Cargo.lock', 'rust-toolchain.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-test-
-
       - name: Install Rust (from rust-toolchain.toml)
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
           rustup show
           rustc --version
+
+      - name: cargo fmt
+        run: cargo fmt --all -- --check
+
+      - name: cargo clippy
+        run: cargo clippy --workspace --all-targets
 
       # Skip trance-applet: optional COSMIC UI, huge libcosmic/wgpu build.
       - name: cargo test (core + tui + cli)
@@ -109,3 +96,35 @@ jobs:
             -p trance-cli \
             -p trance-tui \
             --all-features
+
+      - name: Install cargo-binstall
+        run: |
+          curl -L --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Install cargo-deb and cargo-generate-rpm
+        run: |
+          cargo binstall -y cargo-deb cargo-generate-rpm
+
+      - name: Build release binaries
+        run: |
+          cargo build --release \
+            -p trance-daemon \
+            -p trance-cli \
+            -p trance-plugins-all \
+            -p trance-applet \
+            -p trance-tui
+
+      - name: Verify package creation
+        run: |
+          cargo deb --no-build -p trance-daemon
+          cargo deb --no-build -p trance-cli
+          cargo deb --no-build -p trance-plugins-all
+          cargo deb --no-build -p trance-applet
+          cargo deb --no-build -p trance-tui
+          cargo generate-rpm -p trance-daemon
+          cargo generate-rpm -p trance-cli
+          cargo generate-rpm -p trance-plugins-all
+          cargo generate-rpm -p trance-applet
+          cargo generate-rpm -p trance-tui

@@ -12,6 +12,7 @@ use cosmic::prelude::*;
 
 pub use message::Message;
 
+#[derive(Default)]
 pub struct AppModel {
     pub(crate) core: cosmic::Core,
     pub(crate) popup: Option<Id>,
@@ -21,22 +22,6 @@ pub struct AppModel {
     pub(crate) daemon_running: bool,
     pub(crate) gpu_enabled: bool,
     pub(crate) show_fps_overlay: bool,
-}
-
-impl Default for AppModel {
-    fn default() -> Self {
-        Self {
-            core: cosmic::Core::default(),
-            popup: None,
-            config: crate::config::Config::default(),
-            local_config: crate::config::ThemeConfig::default(),
-            screensavers: Vec::new(),
-            daemon_running: false,
-            // GPU upscaler removed in 2026; always false (field kept for UI/status).
-            gpu_enabled: false,
-            show_fps_overlay: false,
-        }
-    }
 }
 
 impl cosmic::Application for AppModel {

@@ -21,8 +21,7 @@ pub enum PluginError {
 
 /// The canonical list of allowed saver basenames.
 pub const ALLOWED_SAVERS: &[&str] = &[
-    "beams", "bursts", "chaos", "cosmos", "glyphs", "gnats", "radar", "storm",
-    "hearth", "ripple",
+    "beams", "bursts", "chaos", "cosmos", "glyphs", "gnats", "radar", "storm", "hearth", "ripple",
 ];
 
 /// Controls which directories [`resolve_saver_binary`] may search.

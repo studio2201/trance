@@ -142,8 +142,7 @@ fn check_peer_exe(pid: u32) -> PeerExeCheck {
 fn is_trusted_control_peer(pid: u32, peer_uid: Option<u32>) -> bool {
     // Escape hatch is debug-only so release builds cannot be opened with
     // `TRANCE_DBUS_TRUST_ALL=1` by a local attacker.
-    if cfg!(debug_assertions)
-        && std::env::var("TRANCE_DBUS_TRUST_ALL").ok().as_deref() == Some("1")
+    if cfg!(debug_assertions) && std::env::var("TRANCE_DBUS_TRUST_ALL").ok().as_deref() == Some("1")
     {
         tracing::warn!("D-Bus auth: TRANCE_DBUS_TRUST_ALL=1 (debug build only)");
         return true;

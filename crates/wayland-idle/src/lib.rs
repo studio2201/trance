@@ -26,7 +26,8 @@ pub use monitor::IdleMonitor;
 // No X11 ScreenSaver extension fallback is attempted in this crate.
 
 #[cfg(test)]
-pub(crate) static TEST_MUTEX: std::sync::OnceLock<std::sync::Mutex<()>> = std::sync::OnceLock::new();
+pub(crate) static TEST_MUTEX: std::sync::OnceLock<std::sync::Mutex<()>> =
+    std::sync::OnceLock::new();
 
 #[cfg(test)]
 pub(crate) fn get_test_mutex() -> &'static std::sync::Mutex<()> {

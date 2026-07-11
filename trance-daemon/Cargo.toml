@@ -1,6 +1,6 @@
 [package]
 name = "trance-daemon"
-version = "0.3.43"
+version = "0.3.45"
 edition = "2024"
 description = "Background idle daemon and core package for trance screensavers"
 license = "Apache-2.0"
@@ -20,7 +20,7 @@ trance-upscaler = { workspace = true }
 wayland-idle = { workspace = true }
 wayland-present = { workspace = true }
 libc = { workspace = true }
-signal-hook = "0.3"
+signal-hook = "0.4"
 zbus = { workspace = true }
 futures-lite = "2.6"
 tokio = { workspace = true }
@@ -72,12 +72,12 @@ pre_uninstall_script = "rpm/preun.sh"
 # After full transaction: recover if an old package's preun stopped the daemon.
 post_trans_script = "rpm/posttrans.sh"
 assets = [
-    { source = "target/release/trance-daemon", dest = "/usr/bin/trance-daemon", mode = "755" },
-    { source = "assets/trance-daemon.service", dest = "/usr/lib/systemd/user/trance-daemon.service", mode = "644" },
-    { source = "assets/io.github.ubermetroid.trance.service", dest = "/usr/share/dbus-1/services/io.github.ubermetroid.trance.service", mode = "644" },
-    { source = "assets/io.github.ubermetroid.trance.policy", dest = "/usr/share/polkit-1/actions/io.github.ubermetroid.trance.policy", mode = "644" },
-    { source = "assets/trance-daemon.1", dest = "/usr/share/man/man1/trance-daemon.1", mode = "644" },
-    { source = "assets/packaging/user-service-lib.sh", dest = "/usr/lib/trance/user-service-lib.sh", mode = "644" },
+    { source = "target/release/trance-daemon", dest = "/usr/bin/trance-daemon", mode = "755", user = "root", group = "root" },
+    { source = "assets/trance-daemon.service", dest = "/usr/lib/systemd/user/trance-daemon.service", mode = "644", user = "root", group = "root" },
+    { source = "assets/io.github.ubermetroid.trance.service", dest = "/usr/share/dbus-1/services/io.github.ubermetroid.trance.service", mode = "644", user = "root", group = "root" },
+    { source = "assets/io.github.ubermetroid.trance.policy", dest = "/usr/share/polkit-1/actions/io.github.ubermetroid.trance.policy", mode = "644", user = "root", group = "root" },
+    { source = "assets/trance-daemon.1", dest = "/usr/share/man/man1/trance-daemon.1", mode = "644", user = "root", group = "root" },
+    { source = "assets/packaging/user-service-lib.sh", dest = "/usr/lib/trance/user-service-lib.sh", mode = "644", user = "root", group = "root" },
 ]
 
 [package.metadata.generate-rpm.requires]

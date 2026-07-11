@@ -91,19 +91,17 @@ pub async fn watch_external_dbus_inhibits(
                 current_reply_serial = None;
                 app_name = None;
 
-                if line.contains("interface=org.freedesktop.ScreenSaver") {
-                    if let Some(sender_part) = extract_field(&line, "sender=") {
-                        if let Some(serial_part) = extract_field(&line, "serial=") {
-                            if let Ok(serial) = serial_part.parse::<u32>() {
-                                current_sender = Some(sender_part);
-                                current_serial = Some(serial);
-                                if line.contains("member=Inhibit") {
-                                    current_member = Some("Inhibit".to_string());
-                                } else if line.contains("member=UnInhibit") {
-                                    current_member = Some("UnInhibit".to_string());
-                                }
-                            }
-                        }
+                if line.contains("interface=org.freedesktop.ScreenSaver")
+                    && let Some(sender_part) = extract_field(line, "sender=")
+                    && let Some(serial_part) = extract_field(line, "serial=")
+                    && let Ok(serial) = serial_part.parse::<u32>()
+                {
+                    current_sender = Some(sender_part);
+                    current_serial = Some(serial);
+                    if line.contains("member=Inhibit") {
+                        current_member = Some("Inhibit".to_string());
+                    } else if line.contains("member=UnInhibit") {
+                        current_member = Some("UnInhibit".to_string());
                     }
                 }
             } else if line.starts_with("method return ") {
@@ -113,68 +111,56 @@ pub async fn watch_external_dbus_inhibits(
                 current_reply_serial = None;
                 app_name = None;
 
-                if let Some(reply_serial_part) = extract_field(&line, "reply_serial=") {
-                    if let Ok(reply_serial) = reply_serial_part.parse::<u32>() {
-                        current_reply_serial = Some(reply_serial);
-                    }
+                if let Some(reply_serial_part) = extract_field(line, "reply_serial=")
+                    && let Ok(reply_serial) = reply_serial_part.parse::<u32>()
+                {
+                    current_reply_serial = Some(reply_serial);
                 }
-            } else if line.starts_with("string ") {
-                if line.len() > "string ".len() {
-                    let val = line["string ".len()..].trim_matches('"').to_string();
-                    if let Some(member) = &current_member {
-                        if member == "Inhibit" {
-                            if app_name.is_none() {
-                                app_name = Some(val);
-                            } else {
-                                if let (Some(sender), Some(serial), Some(app)) =
-                                    (&current_sender, current_serial, app_name.take())
-                                {
-                                    pending_inhibits.insert(serial, (sender.clone(), app, val));
-                                }
-                                current_member = None;
-                            }
-                        }
-                    }
-                }
-            } else if line.starts_with("uint32 ") {
-                if line.len() > "uint32 ".len() {
-                    if let Ok(cookie) = line["uint32 ".len()..].trim().parse::<u32>() {
-                        if let Some(member) = &current_member {
-                            if member == "UnInhibit" {
-                                if let Some(sender) = &current_sender {
-                                    if let Ok(client_name) =
-                                        zbus::names::UniqueName::try_from(sender.as_str())
-                                    {
-                                        tracing::info!(
-                                            "Removing external inhibitor for client {} (cookie {})",
-                                            client_name,
-                                            cookie
-                                        );
-                                        inhibitors.remove_for_client(cookie, &client_name);
-                                        controller.mark_dirty();
-                                    }
-                                }
-                                current_member = None;
-                            }
-                        } else if let Some(reply_serial) = current_reply_serial {
-                            if let Some((sender, app, reason)) =
-                                pending_inhibits.remove(&reply_serial)
+            } else if let Some(stripped) = line.strip_prefix("string ") {
+                if !stripped.is_empty() {
+                    let val = stripped.trim_matches('"').to_string();
+                    if let Some(member) = &current_member
+                        && member == "Inhibit"
+                    {
+                        if app_name.is_none() {
+                            app_name = Some(val);
+                        } else {
+                            if let (Some(sender), Some(serial), Some(app)) =
+                                (&current_sender, current_serial, app_name.take())
                             {
-                                if let Ok(client_name) =
-                                    zbus::names::UniqueName::try_from(sender.as_str())
-                                {
-                                    inhibitors.add_with_cookie(
-                                        app,
-                                        reason,
-                                        client_name.to_owned(),
-                                        cookie,
-                                    );
-                                    controller.mark_dirty();
-                                }
+                                pending_inhibits.insert(serial, (sender.clone(), app, val));
                             }
-                            current_reply_serial = None;
+                            current_member = None;
                         }
                     }
+                }
+            } else if let Some(stripped) = line.strip_prefix("uint32 ")
+                && let Ok(cookie) = stripped.trim().parse::<u32>()
+            {
+                if let Some(member) = &current_member {
+                    if member == "UnInhibit" {
+                        if let Some(sender) = &current_sender
+                            && let Ok(client_name) =
+                                zbus::names::UniqueName::try_from(sender.as_str())
+                        {
+                            tracing::info!(
+                                "Removing external inhibitor for client {} (cookie {})",
+                                client_name,
+                                cookie
+                            );
+                            inhibitors.remove_for_client(cookie, &client_name);
+                            controller.mark_dirty();
+                        }
+                        current_member = None;
+                    }
+                } else if let Some(reply_serial) = current_reply_serial {
+                    if let Some((sender, app, reason)) = pending_inhibits.remove(&reply_serial)
+                        && let Ok(client_name) = zbus::names::UniqueName::try_from(sender.as_str())
+                    {
+                        inhibitors.add_with_cookie(app, reason, client_name.to_owned(), cookie);
+                        controller.mark_dirty();
+                    }
+                    current_reply_serial = None;
                 }
             }
         }

@@ -32,11 +32,7 @@ fn stdout_trim(cmd: &str, args: &[&str]) -> Option<String> {
         return None;
     }
     let text = String::from_utf8_lossy(&output.stdout).trim().to_string();
-    if text.is_empty() {
-        None
-    } else {
-        Some(text)
-    }
+    if text.is_empty() { None } else { Some(text) }
 }
 
 /// How was trance installed on this machine?
@@ -45,9 +41,7 @@ fn detect_backend() -> Option<Backend> {
     if command_ok("rpm", &["-q", PKG]) {
         return Some(Backend::Dnf);
     }
-    if command_ok("dpkg-query", &["-W", "-f=${Status}", PKG])
-        || command_ok("dpkg", &["-s", PKG])
-    {
+    if command_ok("dpkg-query", &["-W", "-f=${Status}", PKG]) || command_ok("dpkg", &["-s", PKG]) {
         // Confirm "installed" status when possible.
         if let Some(status) = stdout_trim("dpkg-query", &["-W", "-f=${Status}", PKG]) {
             if status.contains("install ok installed") {
@@ -70,29 +64,27 @@ fn detect_backend() -> Option<Backend> {
             .find_map(|l| l.strip_prefix("ID_LIKE="))
             .unwrap_or("")
             .trim_matches('"');
-        if id == "fedora"
+        if (id == "fedora"
             || id == "rhel"
             || id == "centos"
             || id == "rocky"
             || id == "almalinux"
-            || like.split_whitespace().any(|t| {
-                matches!(t, "fedora" | "rhel" | "centos")
-            })
+            || like
+                .split_whitespace()
+                .any(|t| matches!(t, "fedora" | "rhel" | "centos")))
+            && (which("dnf") || which("rpm"))
         {
-            if which("dnf") || which("rpm") {
-                return Some(Backend::Dnf);
-            }
+            return Some(Backend::Dnf);
         }
-        if id == "debian"
+        if (id == "debian"
             || id == "ubuntu"
             || id == "pop"
-            || like.split_whitespace().any(|t| {
-                matches!(t, "debian" | "ubuntu")
-            })
+            || like
+                .split_whitespace()
+                .any(|t| matches!(t, "debian" | "ubuntu")))
+            && (which("apt-cache") || which("apt"))
         {
-            if which("apt-cache") || which("apt") {
-                return Some(Backend::Apt);
-            }
+            return Some(Backend::Apt);
         }
     }
 
@@ -108,9 +100,7 @@ fn detect_backend() -> Option<Backend> {
 
 fn which(cmd: &str) -> bool {
     std::env::var_os("PATH")
-        .map(|p| {
-            std::env::split_paths(&p).any(|dir| dir.join(cmd).is_file())
-        })
+        .map(|p| std::env::split_paths(&p).any(|dir| dir.join(cmd).is_file()))
         .unwrap_or(false)
 }
 
@@ -164,9 +154,9 @@ fn parse_dnf_list_version(text: &str, want_available: bool) -> Option<String> {
             continue;
         }
         let ver = parts[1].to_string();
-        if want_available && (section == "available" || section.is_empty()) {
-            last = Some(ver);
-        } else if !want_available && section == "installed" {
+        if (want_available && (section == "available" || section.is_empty()))
+            || (!want_available && section == "installed")
+        {
             last = Some(ver);
         }
     }

@@ -5,7 +5,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-    open-pull-requests-limit: 10
+    # Prefer fewer, grouped PRs over a noisy backlog of major bumps.
+    open-pull-requests-limit: 5
     groups:
       patch-and-minor:
         applies-to: version-updates
@@ -21,5 +22,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns:
+          - "*"
     commit-message:
       prefix: "ci"
+    labels:
+      - "dependencies"

@@ -1,6 +1,6 @@
 [package]
 name = "trance-applet"
-version = "0.3.43"
+version = "0.3.45"
 edition = "2024"
 license = "Apache-2.0"
 description = "COSMIC Desktop panel applet for the trance screensavers"
@@ -76,11 +76,11 @@ summary = "COSMIC Desktop panel applet for the trance screensavers"
 description = "Native System76 COSMIC Desktop panel applet for the trance screensaver daemon."
 license = "Apache-2.0"
 assets = [
-    { source = "target/release/trance-applet", dest = "/usr/bin/trance-applet", mode = "755" },
-    { source = "resources/app.desktop", dest = "/usr/share/applications/com.system76.CosmicApplet.Trance.desktop", mode = "644" },
-    { source = "resources/app.metainfo.xml", dest = "/usr/share/metainfo/com.system76.CosmicApplet.Trance.metainfo.xml", mode = "644" },
-    { source = "resources/icon.png", dest = "/usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", mode = "644" },
-    { source = "trance-applet.1", dest = "/usr/share/man/man1/trance-applet.1", mode = "644" }
+    { source = "target/release/trance-applet", dest = "/usr/bin/trance-applet", mode = "755", user = "root", group = "root" },
+    { source = "resources/app.desktop", dest = "/usr/share/applications/com.system76.CosmicApplet.Trance.desktop", mode = "644", user = "root", group = "root" },
+    { source = "resources/app.metainfo.xml", dest = "/usr/share/metainfo/com.system76.CosmicApplet.Trance.metainfo.xml", mode = "644", user = "root", group = "root" },
+    { source = "resources/icon.png", dest = "/usr/share/pixmaps/com.system76.CosmicApplet.Trance.png", mode = "644", user = "root", group = "root" },
+    { source = "trance-applet.1", dest = "/usr/share/man/man1/trance-applet.1", mode = "644", user = "root", group = "root" }
 ]
 
 [package.metadata.generate-rpm.requires]

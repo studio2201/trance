@@ -9,15 +9,15 @@ use anyhow::Result;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyModifiers},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use ratatui::{
+    Terminal,
     backend::CrosstermBackend,
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style, Stylize},
     text::Line,
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph},
-    Terminal,
 };
 use trance_dbus::{TranceClient, daemon_available};
 
@@ -244,10 +244,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn run_app(
-    terminal: &mut Terminal<CrosstermBackend<io::Stdout>>,
-    app: &mut App,
-) -> Result<()> {
+fn run_app(terminal: &mut Terminal<CrosstermBackend<io::Stdout>>, app: &mut App) -> Result<()> {
     let mut last_tick = Instant::now();
     let tick_rate = Duration::from_millis(250);
 
@@ -258,89 +255,83 @@ fn run_app(
             .checked_sub(last_tick.elapsed())
             .unwrap_or(Duration::ZERO);
 
-        if event::poll(timeout)? {
-            if let Event::Key(key) = event::read()? {
-                if key.modifiers.contains(KeyModifiers::CONTROL)
-                    && (key.code == KeyCode::Char('c') || key.code == KeyCode::Char('d'))
-                {
-                    return Ok(());
+        if event::poll(timeout)?
+            && let Event::Key(key) = event::read()?
+        {
+            if key.modifiers.contains(KeyModifiers::CONTROL)
+                && (key.code == KeyCode::Char('c') || key.code == KeyCode::Char('d'))
+            {
+                return Ok(());
+            }
+            match key.code {
+                KeyCode::Char('q') | KeyCode::Esc => return Ok(()),
+                KeyCode::Tab => {
+                    app.active_pane = match app.active_pane {
+                        ActivePane::Settings => ActivePane::Screensavers,
+                        ActivePane::Screensavers => ActivePane::Settings,
+                    };
                 }
-                match key.code {
-                    KeyCode::Char('q') | KeyCode::Esc => return Ok(()),
-                    KeyCode::Tab => {
-                        app.active_pane = match app.active_pane {
-                            ActivePane::Settings => ActivePane::Screensavers,
-                            ActivePane::Screensavers => ActivePane::Settings,
-                        };
-                    }
-                    KeyCode::Up => {
-                        match app.active_pane {
-                            ActivePane::Settings => {
-                                if app.selected_setting_idx > 0 {
-                                    app.selected_setting_idx -= 1;
-                                }
-                            }
-                            ActivePane::Screensavers => {
-                                if app.selected_saver_idx > 0 {
-                                    app.selected_saver_idx -= 1;
-                                }
-                            }
+                KeyCode::Up => match app.active_pane {
+                    ActivePane::Settings => {
+                        if app.selected_setting_idx > 0 {
+                            app.selected_setting_idx -= 1;
                         }
                     }
-                    KeyCode::Down => {
-                        match app.active_pane {
-                            ActivePane::Settings => {
-                                if app.selected_setting_idx < 4 {
-                                    app.selected_setting_idx += 1;
-                                }
-                            }
-                            ActivePane::Screensavers => {
-                                if app.selected_saver_idx <= app.screensavers.len() {
-                                    app.selected_saver_idx += 1;
-                                }
-                            }
+                    ActivePane::Screensavers => {
+                        if app.selected_saver_idx > 0 {
+                            app.selected_saver_idx -= 1;
                         }
                     }
-                    KeyCode::Left => {
-                        if app.active_pane == ActivePane::Settings {
-                            match app.selected_setting_idx {
-                                2 => app.adjust_timeout(-1),
-                                3 => app.adjust_scale(-0.05),
-                                _ => {}
-                            }
+                },
+                KeyCode::Down => match app.active_pane {
+                    ActivePane::Settings => {
+                        if app.selected_setting_idx < 4 {
+                            app.selected_setting_idx += 1;
                         }
                     }
-                    KeyCode::Right => {
-                        if app.active_pane == ActivePane::Settings {
-                            match app.selected_setting_idx {
-                                2 => app.adjust_timeout(1),
-                                3 => app.adjust_scale(0.05),
-                                _ => {}
-                            }
+                    ActivePane::Screensavers => {
+                        if app.selected_saver_idx <= app.screensavers.len() {
+                            app.selected_saver_idx += 1;
                         }
                     }
-                    KeyCode::Char(' ') | KeyCode::Enter => {
-                        match app.active_pane {
-                            ActivePane::Settings => match app.selected_setting_idx {
-                                0 => app.toggle_daemon(),
-                                1 => app.toggle_idle(),
-                                4 => app.toggle_fps(),
-                                _ => {}
-                            },
-                            ActivePane::Screensavers => {
-                                if key.code == KeyCode::Enter {
-                                    app.select_saver();
-                                }
-                            }
+                },
+                KeyCode::Left => {
+                    if app.active_pane == ActivePane::Settings {
+                        match app.selected_setting_idx {
+                            2 => app.adjust_timeout(-1),
+                            3 => app.adjust_scale(-0.05),
+                            _ => {}
                         }
                     }
-                    KeyCode::Char('p') => {
-                        app.preview_saver();
-                        // Re-enable raw mode in case preview terminal mode disrupted it
-                        let _ = enable_raw_mode();
-                    }
-                    _ => {}
                 }
+                KeyCode::Right => {
+                    if app.active_pane == ActivePane::Settings {
+                        match app.selected_setting_idx {
+                            2 => app.adjust_timeout(1),
+                            3 => app.adjust_scale(0.05),
+                            _ => {}
+                        }
+                    }
+                }
+                KeyCode::Char(' ') | KeyCode::Enter => match app.active_pane {
+                    ActivePane::Settings => match app.selected_setting_idx {
+                        0 => app.toggle_daemon(),
+                        1 => app.toggle_idle(),
+                        4 => app.toggle_fps(),
+                        _ => {}
+                    },
+                    ActivePane::Screensavers => {
+                        if key.code == KeyCode::Enter {
+                            app.select_saver();
+                        }
+                    }
+                },
+                KeyCode::Char('p') => {
+                    app.preview_saver();
+                    // Re-enable raw mode in case preview terminal mode disrupted it
+                    let _ = enable_raw_mode();
+                }
+                _ => {}
             }
         }
 
@@ -390,7 +381,7 @@ fn ui(f: &mut ratatui::Frame, app: &mut App) {
         .split(chunks[1]);
 
     // Left Pane: Settings
-    let mut settings_list = vec![
+    let mut settings_list = [
         format!(
             "Daemon Service:       {}",
             if app.daemon_running {
@@ -427,26 +418,29 @@ fn ui(f: &mut ratatui::Frame, app: &mut App) {
     let settings_block = Block::default()
         .title(" Settings ")
         .borders(Borders::ALL)
-        .border_style(Style::default().fg(if app.active_pane == ActivePane::Settings {
-            Color::Yellow
-        } else {
-            Color::DarkGray
-        }));
+        .border_style(
+            Style::default().fg(if app.active_pane == ActivePane::Settings {
+                Color::Yellow
+            } else {
+                Color::DarkGray
+            }),
+        );
     let settings_widget = List::new(settings_items).block(settings_block);
     f.render_widget(settings_widget, columns[0]);
 
     // Right Pane: Screensavers list
     let mut saver_items = vec![ListItem::new(format!(
         "{} Random",
-        if app.active_saver == "Random" { "*" } else { " " }
+        if app.active_saver == "Random" {
+            "*"
+        } else {
+            " "
+        }
     ))];
 
     for s in &app.screensavers {
         let prefix = if app.active_saver == *s { "*" } else { " " };
-        saver_items.push(ListItem::new(format!(
-            "{prefix} {}",
-            display_saver_name(s)
-        )));
+        saver_items.push(ListItem::new(format!("{prefix} {}", display_saver_name(s))));
     }
 
     // Apply Highlight
@@ -456,11 +450,13 @@ fn ui(f: &mut ratatui::Frame, app: &mut App) {
     let savers_block = Block::default()
         .title(" Screensavers ")
         .borders(Borders::ALL)
-        .border_style(Style::default().fg(if app.active_pane == ActivePane::Screensavers {
-            Color::Yellow
-        } else {
-            Color::DarkGray
-        }));
+        .border_style(
+            Style::default().fg(if app.active_pane == ActivePane::Screensavers {
+                Color::Yellow
+            } else {
+                Color::DarkGray
+            }),
+        );
     let savers_widget = List::new(saver_items)
         .block(savers_block)
         .highlight_style(

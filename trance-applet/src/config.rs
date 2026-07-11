@@ -27,11 +27,7 @@ impl ThemeConfig {
         if let Ok(xdg_config) = std::env::var("XDG_CONFIG_HOME")
             && !xdg_config.is_empty()
         {
-            return Some(
-                PathBuf::from(xdg_config)
-                    .join("trance")
-                    .join("config.yaml"),
-            );
+            return Some(PathBuf::from(xdg_config).join("trance").join("config.yaml"));
         }
         let home = std::env::var("HOME").ok()?;
         Some(

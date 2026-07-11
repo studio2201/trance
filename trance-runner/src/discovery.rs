@@ -109,12 +109,15 @@ mod tests {
         // With HOME set and no XDG_DATA_HOME, /usr paths must appear before ~/.local.
         let dirs = get_screensaver_dirs();
         let usr = dirs.iter().position(|p| p.starts_with("/usr"));
-        let home = dirs.iter().position(|p| {
-            p.components().any(|c| c.as_os_str() == ".local")
-        });
+        let home = dirs
+            .iter()
+            .position(|p| p.components().any(|c| c.as_os_str() == ".local"));
         assert!(usr.is_some(), "expected at least one /usr plugin dir");
         if let (Some(u), Some(h)) = (usr, home) {
-            assert!(u < h, "system dirs must be searched before user dirs: {dirs:?}");
+            assert!(
+                u < h,
+                "system dirs must be searched before user dirs: {dirs:?}"
+            );
         }
     }
 }

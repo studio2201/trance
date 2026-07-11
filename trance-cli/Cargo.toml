@@ -1,6 +1,6 @@
 [package]
 name = "trance-cli"
-version = "0.3.43"
+version = "0.3.48"
 edition = "2024"
 description = "Command-line interface for the trance screensaver daemon"
 license = "Apache-2.0"
@@ -40,8 +40,8 @@ assets = [
 
 [package.metadata.generate-rpm]
 assets = [
-    { source = "target/release/trance", dest = "/usr/bin/trance", mode = "755" },
-    { source = "trance.1", dest = "/usr/share/man/man1/trance.1", mode = "644" }
+    { source = "target/release/trance", dest = "/usr/bin/trance", mode = "755", user = "root", group = "root" },
+    { source = "trance.1", dest = "/usr/share/man/man1/trance.1", mode = "644", user = "root", group = "root" }
 ]
 
 [package.metadata.generate-rpm.requires]

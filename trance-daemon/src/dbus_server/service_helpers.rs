@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
+use crate::controller::DaemonController;
 use std::sync::Arc;
 use trance_dbus::DaemonStatus;
-use crate::controller::DaemonController;
 
 pub async fn authorize_control(
     controller: &Arc<DaemonController>,

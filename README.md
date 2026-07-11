@@ -1,29 +1,17 @@
+<p align="center">
+  <a href="https://github.com/crateria">
+    <img src="assets/crateria-header.jpg" alt="Crateria" width="100%">
+  </a>
+</p>
+
 # Trance
 
-<img src="assets/icon.svg" width="48" height="48" alt="trance logo" align="right">
-
-Wayland-native screensaver for Linux. A background daemon watches for idle time and shows modular effects (beams, storm, radar, and more).
-
-Works on any Wayland desktop. Control it with the **CLI**, **TUI**, or optional **COSMIC** panel applet.
-
-### What’s new (0.3.38)
-
-- **Upgrades keep the daemon running** — packaging no longer leaves `trance-daemon` stopped after `dnf upgrade`
-- **D-Bus control works under systemd hardening** (preview/stop no longer AccessDenied)
-- **Hero polish** on all eight effects via [trance-plugins](https://github.com/crateria/trance-plugins) (soft light, depth, staggered motion, intro fade)
-- CLI / applet / TUI / plugins-all version-aligned with core
-
----
+Wayland-native screensaver for Linux. A user-session daemon watches idle time and shows modular effects. Control it with the CLI, TUI, or optional COSMIC panel applet.
 
 ## Install
 
-**Idea:** add the crateria package repo once, then always:
-
-```text
-install / upgrade trance  →  enable the user daemon once
-```
-
 Packages live at [crateria/packages](https://github.com/crateria/packages) (not in distro base repos).
+Add the repository once, install trance, then enable the user daemon.
 
 ### 1. Add the repo (once per machine)
 
@@ -174,8 +162,14 @@ trance-tui
 
 ## Links
 
-* [packages](https://github.com/crateria/packages) · [trance-plugins](https://github.com/crateria/trance-plugins) · [SECURITY.md](SECURITY.md)
+| | |
+|--|--|
+| Org | [crateria](https://github.com/crateria) |
+| Effects | [trance-plugins](https://github.com/crateria/trance-plugins) |
+| Packages | [packages](https://github.com/crateria/packages) · [install site](https://crateria.github.io/packages/) |
+| Brand kit | [brand](https://github.com/crateria/brand) |
+| Security | [SECURITY.md](SECURITY.md) |
 
 ## License
 
-[Apache-2.0](LICENSE) · Copyright 2026 crateria
+[Apache-2.0](LICENSE) · Copyright 2026 [Crateria](https://github.com/crateria)

@@ -43,7 +43,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut violations = Vec::new();
 
     for filepath in rs_files {
-        let rel_path = filepath.strip_prefix(".")
+        let rel_path = filepath
+            .strip_prefix(".")
             .unwrap_or(&filepath)
             .to_string_lossy()
             .into_owned();
@@ -65,7 +66,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "This project enforces a range of **{} to {} lines** per source file ",
         MIN_LINES, MAX_LINES
     ));
-    md_content.push_str("to ensure readability and compatibility with smaller LLMs (like Mistral and Minimax).\n\n");
+    md_content.push_str(
+        "to ensure readability and compatibility with smaller LLMs (like Mistral and Minimax).\n\n",
+    );
 
     md_content.push_str("## Status Report\n\n");
     if !violations.is_empty() {
@@ -84,7 +87,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else {
             "✅ OK".to_string()
         };
-        md_content.push_str(&format!("| [`{}`]({}) | {} | {} |\n", path, path, count, status));
+        md_content.push_str(&format!(
+            "| [`{}`]({}) | {} | {} |\n",
+            path, path, count, status
+        ));
     }
 
     fs::write(REPORT_FILE, md_content)?;
@@ -101,7 +107,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         process::exit(1);
     } else {
-        println!("\n✅ All {} files are between {} and {} lines.", file_stats.len(), MIN_LINES, MAX_LINES);
+        println!(
+            "\n✅ All {} files are between {} and {} lines.",
+            file_stats.len(),
+            MIN_LINES,
+            MAX_LINES
+        );
         process::exit(0);
     }
 }

@@ -141,7 +141,7 @@ fn check_dbus() -> CheckResult {
         }
         Err(e) => {
             println!(" [✗] D-Bus Connectivity: Failed to connect to daemon: {e}");
-            chk("D-Bus Connectivity", true, format!("{e}"))
+            chk("D-Bus Connectivity", false, format!("{e}"))
         }
     }
 }
@@ -203,7 +203,7 @@ fn check_running_pid() -> CheckResult {
         chk("Process Status", true, "missing pid but d-bus ok")
     } else {
         println!(" [✗] Process Status: Daemon PID file does not exist.");
-        chk("Process Status", true, "missing pid file")
+        chk("Process Status", false, "missing pid file")
     }
 }
 
@@ -257,26 +257,29 @@ fn check_fonts() -> CheckResult {
 fn check_package_install() -> CheckResult {
     // Prefer RPM: Fedora often has apt-cache on PATH too.
     if let Ok(o) = Command::new("rpm")
-        .args(["-q", "trance", "--qf", "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}"])
+        .args([
+            "-q",
+            "trance",
+            "--qf",
+            "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}",
+        ])
         .output()
+        && o.status.success()
     {
-        if o.status.success() {
-            let ver = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            println!(" [✔] Package (RPM): {ver}");
-            println!("     -> Upgrade with: sudo dnf update");
-            return chk("Package", true, ver);
-        }
+        let ver = String::from_utf8_lossy(&o.stdout).trim().to_string();
+        println!(" [✔] Package (RPM): {ver}");
+        println!("     -> Upgrade with: sudo dnf update");
+        return chk("Package", true, ver);
     }
     if let Ok(o) = Command::new("dpkg-query")
         .args(["-W", "-f=${Package} ${Version}", "trance"])
         .output()
+        && o.status.success()
     {
-        if o.status.success() {
-            let ver = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            println!(" [✔] Package (DEB): {ver}");
-            println!("     -> Upgrade with: sudo apt update && sudo apt upgrade");
-            return chk("Package", true, ver);
-        }
+        let ver = String::from_utf8_lossy(&o.stdout).trim().to_string();
+        println!(" [✔] Package (DEB): {ver}");
+        println!("     -> Upgrade with: sudo apt update && sudo apt upgrade");
+        return chk("Package", true, ver);
     }
     println!(" [!] Package: trance not found via RPM or dpkg.");
     println!("     -> Install from the crateria apt/dnf repository.");

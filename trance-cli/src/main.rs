@@ -324,14 +324,18 @@ fn print_version(verbose: bool) {
         println!("Package: {pkg}");
     }
     if daemon_available() {
-        if let Ok(client) = TranceClient::connect() {
-            if let Ok(status) = client.get_status() {
-                println!(
-                    "Daemon:  reachable ({})",
-                    if status.running { "running" } else { "connected" }
-                );
-                return;
-            }
+        if let Ok(client) = TranceClient::connect()
+            && let Ok(status) = client.get_status()
+        {
+            println!(
+                "Daemon:  reachable ({})",
+                if status.running {
+                    "running"
+                } else {
+                    "connected"
+                }
+            );
+            return;
         }
         println!("Daemon:  reachable");
     } else {
@@ -343,25 +347,28 @@ fn print_version(verbose: bool) {
 fn package_version_hint() -> Option<String> {
     // Prefer RPM (Fedora may also have apt-cache on PATH).
     if let Ok(o) = std::process::Command::new("rpm")
-        .args(["-q", "trance", "--qf", "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}"])
+        .args([
+            "-q",
+            "trance",
+            "--qf",
+            "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}",
+        ])
         .output()
+        && o.status.success()
     {
-        if o.status.success() {
-            let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            if !s.is_empty() && !s.contains("is not installed") {
-                return Some(s);
-            }
+        let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
+        if !s.is_empty() && !s.contains("is not installed") {
+            return Some(s);
         }
     }
     if let Ok(o) = std::process::Command::new("dpkg-query")
         .args(["-W", "-f=${Package} ${Version}", "trance"])
         .output()
+        && o.status.success()
     {
-        if o.status.success() {
-            let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
-            if !s.is_empty() {
-                return Some(s);
-            }
+        let s = String::from_utf8_lossy(&o.stdout).trim().to_string();
+        if !s.is_empty() {
+            return Some(s);
         }
     }
     None

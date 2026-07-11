@@ -60,6 +60,7 @@ impl DaemonController {
         }
     }
 
+    #[allow(clippy::fn_params_excessive_bools)]
     fn compute_dirty_fields(
         status: &mut trance_dbus::DaemonStatus,
         config: &crate::config::DaemonConfig,
@@ -94,6 +95,7 @@ impl DaemonController {
             || status.current_saver != current_saver
     }
 
+    #[allow(clippy::fn_params_excessive_bools)]
     fn copy_live_fields(
         status: &mut trance_dbus::DaemonStatus,
         config: &crate::config::DaemonConfig,
@@ -112,10 +114,7 @@ impl DaemonController {
         status.inhibited = inhibited;
         status.idle_enabled = config.idle_enabled;
         status.idle_timeout_mins = config.idle_timeout_mins;
-        status.active_saver = config
-            .active_saver
-            .clone()
-            .unwrap_or_default();
+        status.active_saver = config.active_saver.clone().unwrap_or_default();
         #[allow(deprecated)]
         {
             status.gpu_enabled = config.gpu_enabled;

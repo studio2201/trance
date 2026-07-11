@@ -19,6 +19,7 @@ pub struct Inhibitor {
 pub struct InhibitorState {
     inhibitors: Mutex<Vec<Inhibitor>>,
     last_cookie: AtomicU32,
+    #[cfg(not(test))]
     logind_cache: Mutex<(bool, std::time::Instant)>,
 }
 
@@ -27,6 +28,7 @@ impl InhibitorState {
         Self {
             inhibitors: Mutex::new(Vec::new()),
             last_cookie: AtomicU32::new(0),
+            #[cfg(not(test))]
             logind_cache: Mutex::new((
                 false,
                 std::time::Instant::now()
@@ -142,10 +144,10 @@ impl InhibitorState {
     }
 }
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", not(test)))]
 type LogindInhibitorInfo = (String, String, String, String, u32, u32);
 
-#[cfg(target_os = "linux")]
+#[cfg(all(target_os = "linux", not(test)))]
 fn check_logind_inhibited() -> bool {
     let run_blocking = || {
         let Ok(conn) = zbus::blocking::Connection::system() else {
@@ -178,7 +180,7 @@ fn check_logind_inhibited() -> bool {
     }
 }
 
-#[cfg(not(target_os = "linux"))]
+#[cfg(all(not(target_os = "linux"), not(test)))]
 fn check_logind_inhibited() -> bool {
     false
 }

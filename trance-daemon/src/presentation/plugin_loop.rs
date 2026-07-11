@@ -151,7 +151,9 @@ impl FramePacing {
         if sys.power_status.contains("Battery") {
             present_fps = present_fps.min(30.0);
             tick_hz = tick_hz.min(30.0);
-            tracing::info!("Battery power detected: capping physics simulation and rendering frame rate targets to 30 FPS/Hz");
+            tracing::info!(
+                "Battery power detected: capping physics simulation and rendering frame rate targets to 30 FPS/Hz"
+            );
         }
 
         let frame_duration = Duration::from_secs_f32(1.0 / present_fps);
