@@ -1,32 +1,18 @@
 # Trance
 
 <p align="center">
-  <img src="assets/icon.png" width="128" height="128" alt="Trance">
+  <img src="assets/icon.png" width="96" height="96" alt="Trance">
 </p>
 
-<p align="center">
-  <strong>Wayland-native screensaver</strong> for Linux — part of
-  <a href="https://github.com/crateria">Crateria</a>
-</p>
+Wayland-native screensaver for Linux ([Crateria](https://github.com/crateria)).
 
-A background daemon watches for idle time and shows modular effects (beams, storm, radar, and more). Works on any Wayland desktop. Control it with the **CLI**, **TUI**, or optional **COSMIC** panel applet.
-
-### What’s new (0.3.38)
-
-- **Upgrades keep the daemon running** — packaging no longer leaves `trance-daemon` stopped after `dnf upgrade`
-- **D-Bus control works under systemd hardening** (preview/stop no longer AccessDenied)
-- **Hero polish** on all eight effects via [trance-plugins](https://github.com/crateria/trance-plugins) (soft light, depth, staggered motion, intro fade)
-- CLI / applet / TUI / plugins-all version-aligned with core
-
----
+A user-session daemon watches idle time and shows modular effects (beams, storm,
+radar, and more). Control it with the CLI, TUI, or optional COSMIC panel applet.
 
 ## Install
 
-**Idea:** add the crateria package repo once, then always:
-
-```text
-install / upgrade trance  →  enable the user daemon once
-```
+Add the [Crateria package repository](https://crateria.github.io/packages/) once,
+then install and enable the user service:
 
 Packages live at [crateria/packages](https://github.com/crateria/packages) (not in distro base repos).
 
