@@ -11,7 +11,7 @@ workspace = true
 [dependencies]
 libc = { workspace = true }
 trance-api = { workspace = true }
-libloading = "0.8"
+libloading = "0.9"
 crossterm = "0.28"
 sysinfo = "0.30"
 fontdue = "0.9"
