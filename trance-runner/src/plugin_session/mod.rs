@@ -8,6 +8,10 @@ use trance_api::{Screensaver, ScreensaverInstance, TerminalCell};
 use trance_upscaler::FrameUpscaler;
 
 mod loading;
+mod reloading;
+
+#[cfg(test)]
+mod reloading_tests;
 
 pub(crate) struct PluginGuard {
     pub(crate) ptr: *mut ScreensaverInstance,
@@ -31,7 +35,8 @@ impl PluginGuard {
 
 /// Headless screensaver plugin host for Wayland frame presentation.
 pub struct PluginSession {
-    pub(crate) plugin: PluginGuard,
+    pub(crate) plugin: Option<PluginGuard>,
+    pub(crate) plugin_path: std::path::PathBuf,
     pub(crate) renderer: CellRenderer,
     pub(crate) upscaler: FrameUpscaler,
     pub(crate) render_scale: f32,
@@ -44,6 +49,8 @@ pub struct PluginSession {
     pub(crate) simulation_cols: usize,
     pub(crate) simulation_rows: usize,
     pub(crate) hardware_scaling: bool,
+    pub(crate) watcher: Option<notify::RecommendedWatcher>,
+    pub(crate) needs_reload: std::sync::Arc<std::sync::atomic::AtomicBool>,
 }
 
 impl PluginSession {
@@ -80,7 +87,7 @@ impl PluginSession {
         self.simulation_cols = cols;
         self.simulation_rows = rows;
         self.grid = vec![TerminalCell::default(); cols * rows];
-        self.plugin.saver_mut().init(cols, rows);
+        self.plugin.as_mut().unwrap().saver_mut().init(cols, rows);
     }
 
     pub fn set_simulation_rate(&mut self, fps: f32) {
@@ -90,7 +97,7 @@ impl PluginSession {
 
     #[tracing::instrument(skip_all)]
     pub fn tick(&mut self, frame_dt: Duration) {
-        self.plugin.saver_mut().update_frame_time(frame_dt);
+        self.plugin.as_mut().unwrap().saver_mut().update_frame_time(frame_dt);
         self.time_elapsed += frame_dt;
 
         self.physics_accumulator += frame_dt;
@@ -102,7 +109,7 @@ impl PluginSession {
             let dt = self.physics_duration;
             let cols = self.simulation_cols;
             let rows = self.simulation_rows;
-            self.plugin.saver_mut().update(dt, cols, rows);
+            self.plugin.as_mut().unwrap().saver_mut().update(dt, cols, rows);
             self.physics_accumulator -= dt;
         }
     }
@@ -124,7 +131,7 @@ impl PluginSession {
         if self.grid.len() != grid_cols * grid_rows {
             self.grid = vec![TerminalCell::default(); grid_cols * grid_rows];
         }
-        let saver = self.plugin.saver_mut();
+        let saver = self.plugin.as_mut().unwrap().saver_mut();
         saver.draw(&mut self.grid, grid_cols, grid_rows);
         saver.has_scanlines()
     }

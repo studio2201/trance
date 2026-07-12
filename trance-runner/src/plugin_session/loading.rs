@@ -87,7 +87,8 @@ impl PluginSession {
             };
 
             Ok(Self {
-                plugin: guard,
+                plugin: Some(guard),
+                plugin_path: path.to_path_buf(),
                 renderer,
                 upscaler,
                 render_scale,
@@ -100,6 +101,8 @@ impl PluginSession {
                 simulation_cols: 0,
                 simulation_rows: 0,
                 hardware_scaling: false,
+                watcher: None,
+                needs_reload: std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false)),
             })
         }
     }

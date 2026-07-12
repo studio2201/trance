@@ -32,9 +32,9 @@ This project enforces a range of **25 to 250 lines** per source file to ensure r
 | [`src/launcher_tests.rs`](src/launcher_tests.rs) | 144 | ✅ OK |
 | [`src/lib.rs`](src/lib.rs) | 34 | ✅ OK |
 | [`src/platform_helpers.rs`](src/platform_helpers.rs) | 72 | ✅ OK |
-| [`src/plugin_session/loading.rs`](src/plugin_session/loading.rs) | 106 | ✅ OK |
-| [`src/plugin_session/mod.rs`](src/plugin_session/mod.rs) | 207 | ✅ OK |
-| [`src/plugin_session/reloading.rs`](src/plugin_session/reloading.rs) | 108 | ✅ OK |
+| [`src/plugin_session/loading.rs`](src/plugin_session/loading.rs) | 109 | ✅ OK |
+| [`src/plugin_session/mod.rs`](src/plugin_session/mod.rs) | 214 | ✅ OK |
+| [`src/plugin_session/reloading.rs`](src/plugin_session/reloading.rs) | 106 | ✅ OK |
 | [`src/renderer.rs`](src/renderer.rs) | 107 | ✅ OK |
 | [`src/sandbox.rs`](src/sandbox.rs) | 33 | ✅ OK |
 | [`src/terminal_guard.rs`](src/terminal_guard.rs) | 44 | ✅ OK |
