@@ -62,6 +62,12 @@ impl PluginSession {
         unsafe {
             let lib = Library::new(path)?;
 
+            // Eagerly set OS and logo text environment variables so plugins can read them
+            // even inside the Landlock sandbox.
+            let sys_info = crate::toolkit::sys_info::get_system_info();
+            std::env::set_var("TRANCE_OS_NAME", &sys_info.os);
+            std::env::set_var("TRANCE_LOGO_TEXT", &sys_info.logo_text);
+
             // Eagerly load caption font before filesystem is locked
             crate::caption_overlay::init_font();
             if let Err(e) = crate::sandbox::enforce_sandbox() {

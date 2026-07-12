@@ -19,20 +19,37 @@ pub struct SystemInfo {
 
 impl Default for SystemInfo {
     fn default() -> Self {
-        let mut os = "Linux".to_string();
-        let mut logo_text = "crateria".to_string();
-        if let Ok(content) = std::fs::read_to_string("/etc/os-release") {
-            for line in content.lines() {
-                if line.starts_with("PRETTY_NAME=") {
-                    let val = line.split('=').nth(1).unwrap_or("").trim_matches('"');
-                    if !val.is_empty() {
-                        os = val.to_string();
-                        logo_text = val.to_string();
-                        break;
+        let os = std::env::var("TRANCE_OS_NAME").unwrap_or_else(|_| {
+            let mut temp_os = "Linux".to_string();
+            if let Ok(content) = std::fs::read_to_string("/etc/os-release") {
+                for line in content.lines() {
+                    if line.starts_with("PRETTY_NAME=") {
+                        let val = line.split('=').nth(1).unwrap_or("").trim_matches('"');
+                        if !val.is_empty() {
+                            temp_os = val.to_string();
+                            break;
+                        }
                     }
                 }
             }
-        }
+            temp_os
+        });
+
+        let logo_text = std::env::var("TRANCE_LOGO_TEXT").unwrap_or_else(|_| {
+            let mut temp_logo = "Linux".to_string();
+            if let Ok(content) = std::fs::read_to_string("/etc/os-release") {
+                for line in content.lines() {
+                    if line.starts_with("PRETTY_NAME=") {
+                        let val = line.split('=').nth(1).unwrap_or("").trim_matches('"');
+                        if !val.is_empty() {
+                            temp_logo = val.to_string();
+                            break;
+                        }
+                    }
+                }
+            }
+            temp_logo
+        });
 
         let hostname = std::env::var("HOSTNAME").unwrap_or_else(|_| "localhost".to_string());
 
