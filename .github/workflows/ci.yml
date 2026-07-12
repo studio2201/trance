@@ -144,11 +144,4 @@ jobs:
           cargo generate-rpm -p trance-applet
           cargo generate-rpm -p trance-tui
 
-      - name: Upload release packages as artifacts
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-packages
-          path: |
-            target/debian/*.deb
-            target/generate-rpm/*.rpm
+
