@@ -7,9 +7,9 @@ mod daemon;
 mod dbus_server;
 mod failsafe;
 mod inhibit;
+mod ipc_runner;
 mod lock_monitor;
 mod presentation;
-mod ipc_runner;
 
 fn main() -> anyhow::Result<()> {
     use anyhow::Context;
@@ -82,7 +82,9 @@ fn main() -> anyhow::Result<()> {
             }
         } else if sub == "run-ipc-runner" {
             if args.len() < 9 {
-                eprintln!("error: missing arguments.\nusage: trance-daemon run-ipc-runner <saver> <socket_path> <shm_name> <cols> <rows> <gpu_enabled> <render_scale>");
+                eprintln!(
+                    "error: missing arguments.\nusage: trance-daemon run-ipc-runner <saver> <socket_path> <shm_name> <cols> <rows> <gpu_enabled> <render_scale>"
+                );
                 std::process::exit(1);
             }
             let saver = &args[2];
@@ -91,9 +93,21 @@ fn main() -> anyhow::Result<()> {
             let cols: usize = args[5].parse().unwrap_or(80);
             let rows: usize = args[6].parse().unwrap_or(24);
             let gpu_enabled: bool = args[7].parse().unwrap_or(false);
-            let render_scale: Option<f32> = if args[8] == "none" { None } else { args[8].parse().ok() };
+            let render_scale: Option<f32> = if args[8] == "none" {
+                None
+            } else {
+                args[8].parse().ok()
+            };
 
-            if let Err(e) = ipc_runner::run_ipc_runner(saver, socket_path, shm_name, cols, rows, gpu_enabled, render_scale) {
+            if let Err(e) = ipc_runner::run_ipc_runner(
+                saver,
+                socket_path,
+                shm_name,
+                cols,
+                rows,
+                gpu_enabled,
+                render_scale,
+            ) {
                 eprintln!("runner error: {}", e);
                 std::process::exit(1);
             }

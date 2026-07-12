@@ -178,10 +178,12 @@ impl SharedMemory {
         &self.name
     }
 
+    #[allow(clippy::mut_from_ref)]
     pub unsafe fn header_mut(&self) -> &mut SharedMemoryHeader {
         unsafe { &mut *(self.ptr as *mut SharedMemoryHeader) }
     }
 
+    #[allow(clippy::mut_from_ref)]
     pub unsafe fn cells_mut(&self) -> &mut [FfiTerminalCell] {
         let header = unsafe { self.header_mut() };
         let count = (header.cols * header.rows) as usize;
@@ -330,7 +332,10 @@ mod tests {
     #[test]
     fn test_ipc_commands() {
         let cmds = vec![
-            IpcCommand::Init { cols: 120, rows: 40 },
+            IpcCommand::Init {
+                cols: 120,
+                rows: 40,
+            },
             IpcCommand::TickAndDraw { dt_micros: 16666 },
             IpcCommand::SetSimulationRate { hz: 60.0 },
             IpcCommand::Stop,
@@ -369,4 +374,3 @@ mod tests {
         assert_eq!(size, header_sz + 80 * 24 * cell_sz);
     }
 }
-

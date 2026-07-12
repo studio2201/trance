@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-use std::sync::atomic::Ordering;
-use std::time::Duration;
+use super::{PluginGuard, PluginSession};
+use crate::launcher::PluginError;
 use libloading::Library;
 use notify::Watcher;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
 use trance_api::ScreensaverInstance;
-use crate::launcher::PluginError;
-use super::{PluginGuard, PluginSession};
 
 impl PluginSession {
     #[tracing::instrument(skip(self))]
@@ -67,30 +67,43 @@ impl PluginSession {
 
     pub fn start_watcher(&mut self) -> Result<(), PluginError> {
         let needs_reload = self.needs_reload.clone();
-        let target_filename = self.plugin_path.file_name()
-            .ok_or_else(|| PluginError::Io(std::io::Error::new(
-                std::io::ErrorKind::InvalidInput,
-                "invalid plugin path",
-            )))?
+        let target_filename = self
+            .plugin_path
+            .file_name()
+            .ok_or_else(|| {
+                PluginError::Io(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "invalid plugin path",
+                ))
+            })?
             .to_os_string();
 
-        let mut watcher = notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
-            if let Ok(event) = res {
-                let matches = event.paths.iter().any(|p| p.file_name() == Some(&target_filename));
-                if matches && (event.kind.is_modify() || event.kind.is_create()) {
-                    tracing::info!("Watcher detected modification for {:?}", target_filename);
-                    needs_reload.store(true, Ordering::Relaxed);
+        let mut watcher =
+            notify::recommended_watcher(move |res: Result<notify::Event, notify::Error>| {
+                if let Ok(event) = res {
+                    let matches = event
+                        .paths
+                        .iter()
+                        .any(|p| p.file_name() == Some(&target_filename));
+                    if matches && (event.kind.is_modify() || event.kind.is_create()) {
+                        tracing::info!("Watcher detected modification for {:?}", target_filename);
+                        needs_reload.store(true, Ordering::Relaxed);
+                    }
                 }
-            }
-        }).map_err(|e| PluginError::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
+            })
+            .map_err(|e| PluginError::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
 
         if let Some(parent) = self.plugin_path.parent() {
-            watcher.watch(parent, notify::RecursiveMode::NonRecursive)
+            watcher
+                .watch(parent, notify::RecursiveMode::NonRecursive)
                 .map_err(|e| PluginError::Io(std::io::Error::new(std::io::ErrorKind::Other, e)))?;
         }
 
         self.watcher = Some(watcher);
-        tracing::info!("Started file watcher on {:?}", self.plugin_path.parent().unwrap());
+        tracing::info!(
+            "Started file watcher on {:?}",
+            self.plugin_path.parent().unwrap()
+        );
         Ok(())
     }
 

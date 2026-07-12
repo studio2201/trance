@@ -8,10 +8,10 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 use trance_api::TerminalCell;
+use trance_ipc::{IpcCommand, IpcResponse, SHM_MAGIC, SharedMemory, compute_shm_size};
 use trance_runner::cell_renderer::CellRenderer;
 use trance_runner::launcher::LaunchMode;
 use trance_upscaler::{FilterMode, FrameUpscaler, resolve_render_scale};
-use trance_ipc::{SharedMemory, IpcCommand, IpcResponse, compute_shm_size, SHM_MAGIC};
 
 pub struct IpcPluginSession {
     saver_name: String,
@@ -53,7 +53,7 @@ impl IpcPluginSession {
             content_buf: Vec::new(),
             pixel_buf: Vec::new(),
             hardware_scaling: false,
-                        child: None,
+            child: None,
             socket: None,
             shm: None,
             socket_path: None,
@@ -96,7 +96,8 @@ impl IpcPluginSession {
         }
         let listener = UnixListener::bind(&socket_path)
             .map_err(|e| format!("failed to bind UDS listener: {}", e))?;
-        listener.set_nonblocking(true)
+        listener
+            .set_nonblocking(true)
             .map_err(|e| format!("failed to set UDS listener nonblocking: {}", e))?;
 
         self.socket_path = Some(socket_path.clone());
@@ -183,7 +184,8 @@ impl IpcPluginSession {
             }
         };
 
-        socket.set_nonblocking(false)
+        socket
+            .set_nonblocking(false)
             .map_err(|e| format!("failed to set blocking on runner stream: {}", e))?;
 
         let mut socket = socket;

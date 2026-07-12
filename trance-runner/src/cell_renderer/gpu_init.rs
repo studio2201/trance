@@ -52,15 +52,14 @@ impl GpuCellRenderer {
         ))
         .map_err(|e| format!("No GPU adapter found: {e}"))?;
 
-        let (device, queue) = futures_lite::future::block_on(adapter.request_device(
-            &wgpu::DeviceDescriptor {
+        let (device, queue) =
+            futures_lite::future::block_on(adapter.request_device(&wgpu::DeviceDescriptor {
                 label: Some("trance-runner headless device"),
                 required_features: wgpu::Features::empty(),
                 required_limits: wgpu::Limits::default(),
                 ..Default::default()
-            },
-        ))
-        .map_err(|e| format!("Failed to create wgpu device: {e}"))?;
+            }))
+            .map_err(|e| format!("Failed to create wgpu device: {e}"))?;
 
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("cell shader"),

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-use landlock::{ABI, AccessFs, Ruleset};
-use landlock::RulesetAttr;
 use landlock::Access;
+use landlock::RulesetAttr;
+use landlock::{ABI, AccessFs, Ruleset};
 
 /// Enforces a strict Landlock filesystem sandbox on the current process,
 /// locking down all filesystem access (read, write, execute).

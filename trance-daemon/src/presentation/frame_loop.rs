@@ -111,7 +111,7 @@ fn prepare_frame(state: &mut FrameLoopState) -> Result<(), String> {
 
 fn present_frame(state: &mut FrameLoopState) {
     let (min_x, min_y, total_w, total_h) = virtual_desktop(state.layouts);
-    
+
     if state.independent_rendering {
         for s in state.sessions.iter_mut() {
             let scanlines = s.session.draw_frame(s.cols, s.rows);
@@ -128,15 +128,7 @@ fn present_frame(state: &mut FrameLoopState) {
                 };
 
                 let mut pixels = s.session.raster_viewport(
-                    0,
-                    0,
-                    s.cols,
-                    s.rows,
-                    s.cols,
-                    s.rows,
-                    target_w,
-                    target_h,
-                    scanlines,
+                    0, 0, s.cols, s.rows, s.cols, s.rows, target_w, target_h, scanlines,
                 );
                 maybe_draw_overlays(
                     &mut pixels,

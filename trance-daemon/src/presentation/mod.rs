@@ -7,11 +7,11 @@
 //! mirror, primary-only, span) are handled in the frame loop submodule.
 
 mod frame_loop;
+mod ipc_session;
 mod layout;
 mod overlays;
 mod plugin_loop;
 mod refresh;
-mod ipc_session;
 pub mod topology;
 
 use std::sync::Arc;

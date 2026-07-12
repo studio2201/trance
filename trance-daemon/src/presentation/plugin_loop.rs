@@ -3,15 +3,14 @@
 use std::sync::atomic::AtomicBool;
 use std::time::{Duration, Instant};
 
-use trance_api::{clear_caption, clear_primary_bounds};
 use super::ipc_session::IpcPluginSession;
+use trance_api::{clear_caption, clear_primary_bounds};
 use trance_upscaler::{simulation_tick_hz, target_fps};
 use wayland_present::{OutputLayout, OverlayPresenter};
 
 use super::frame_loop::{ActiveSession, run_frame_loop};
 use super::layout::{
-    install_primary_bounds_callback, primary_bounds_in_grid,
-    span_simulation_grid, virtual_desktop,
+    install_primary_bounds_callback, primary_bounds_in_grid, span_simulation_grid, virtual_desktop,
 };
 use super::refresh::{presentation_refresh_hz, wait_for_output_layouts};
 use crate::presentation::PresentationOptions;
@@ -96,15 +95,7 @@ pub fn run_plugin_loop(
     } else {
         let s = &sessions[0];
         let (min_x, min_y, total_w, total_h) = virtual_desktop(&layouts);
-        primary_bounds_in_grid(
-            primary,
-            min_x,
-            min_y,
-            total_w,
-            total_h,
-            s.cols,
-            s.rows,
-        )
+        primary_bounds_in_grid(primary, min_x, min_y, total_w, total_h, s.cols, s.rows)
     };
 
     let (v_cols, v_rows) = if topology.independent_rendering {
@@ -245,6 +236,10 @@ fn log_run_startup(
         pacing.present_fps,
         pacing.tick_hz,
         session.render_scale() * 100.0,
-        if session.using_gpu_upscale() { "yes" } else { "no" }
+        if session.using_gpu_upscale() {
+            "yes"
+        } else {
+            "no"
+        }
     );
 }

@@ -101,11 +101,7 @@ impl Dispatch<wl_output::WlOutput, u32> for SessionState {
                             .get(output_id)
                             .copied()
                             .unwrap_or((0, 0));
-                        let scale = state
-                            .output_scale
-                            .get(output_id)
-                            .copied()
-                            .unwrap_or(1);
+                        let scale = state.output_scale.get(output_id).copied().unwrap_or(1);
                         state.output_registry.upsert(OutputLayout {
                             id: *output_id,
                             width,

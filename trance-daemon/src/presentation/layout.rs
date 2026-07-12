@@ -4,8 +4,8 @@
 
 use std::sync::{OnceLock, RwLock};
 
-use trance_api::MonitorCellBounds;
 use super::ipc_session::IpcPluginSession;
+use trance_api::MonitorCellBounds;
 use wayland_present::OutputLayout;
 
 #[derive(Clone, Copy)]
@@ -35,7 +35,11 @@ pub fn normalize_layout_positions(layouts: &mut [OutputLayout]) {
 }
 
 /// Caps span simulation cost: full virtual-desktop coverage with a bounded cell count.
-pub fn span_simulation_grid(session: &IpcPluginSession, total_w: u32, total_h: u32) -> (usize, usize) {
+pub fn span_simulation_grid(
+    session: &IpcPluginSession,
+    total_w: u32,
+    total_h: u32,
+) -> (usize, usize) {
     const MAX_SPAN_CELLS: usize = 12_000;
     let (cols, rows) = session.grid_for_pixels(total_w, total_h);
     let cells = cols.saturating_mul(rows);

@@ -6,10 +6,10 @@
 
 mod atlas;
 mod font;
-mod pixels;
 mod geom;
 mod gpu_init;
 mod gpu_render;
+mod pixels;
 
 use std::collections::HashMap;
 use std::sync::Arc;

@@ -6,7 +6,11 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
   pull_request:
+    paths-ignore:
+      - '**.md'
   workflow_dispatch:
 
 concurrency:
@@ -14,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   CARGO_TERM_COLOR: always
@@ -28,19 +32,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Checkout code
-        run: |
-          git init
-          git remote add origin https://github.com/crateria/trance.git
-          git fetch --depth=1 origin ${{ github.sha }}
-          git reset --hard FETCH_HEAD
+        uses: actions/checkout@v4
 
-      - name: Install Rust (from rust-toolchain.toml)
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          rustup show
-          rustc --version
-          cargo --version
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.96.0
 
       - name: Install cargo-deny
         run: |
@@ -58,11 +55,9 @@ jobs:
     timeout-minutes: 45
     steps:
       - name: Checkout code
-        run: |
-          git init
-          git remote add origin https://github.com/crateria/trance.git
-          git fetch --depth=1 origin ${{ github.sha }}
-          git reset --hard FETCH_HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Install system libraries
         run: |
@@ -70,19 +65,27 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             libdbus-1-dev pkg-config \
             libwayland-dev libxkbcommon-dev \
-            libssl-dev
+            libssl-dev \
+            libpam0g-dev
 
-      - name: Install Rust (from rust-toolchain.toml)
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
-          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-          rustup show
-          rustc --version
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.96.0
+          components: rustfmt, clippy
+
+      - name: cargo clippy fix
+        run: cargo clippy --fix --workspace --all-targets --allow-dirty --allow-staged
 
       - name: cargo fmt
-        run: cargo fmt --all -- --check
+        run: cargo fmt --all
 
-      - name: cargo clippy
+      - name: Commit fmt and clippy --fix changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "style: auto-format and apply clippy fixes"
+
+      - name: Run clippy check
         run: cargo clippy --workspace --all-targets
 
       # Skip trance-applet: optional COSMIC UI, huge libcosmic/wgpu build.
@@ -131,3 +134,12 @@ jobs:
           cargo generate-rpm -p trance-plugins-all
           cargo generate-rpm -p trance-applet
           cargo generate-rpm -p trance-tui
+
+      - name: Upload release packages as artifacts
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: |
+            target/debian/*.deb
+            target/generate-rpm/*.rpm

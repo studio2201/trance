@@ -10,7 +10,6 @@ use trance_upscaler::FrameUpscaler;
 mod loading;
 mod reloading;
 
-
 pub(crate) struct PluginGuard {
     pub(crate) ptr: *mut ScreensaverInstance,
     pub(crate) destroy: unsafe extern "C" fn(*mut ScreensaverInstance),
@@ -95,7 +94,11 @@ impl PluginSession {
 
     #[tracing::instrument(skip_all)]
     pub fn tick(&mut self, frame_dt: Duration) {
-        self.plugin.as_mut().unwrap().saver_mut().update_frame_time(frame_dt);
+        self.plugin
+            .as_mut()
+            .unwrap()
+            .saver_mut()
+            .update_frame_time(frame_dt);
         self.time_elapsed += frame_dt;
 
         self.physics_accumulator += frame_dt;
@@ -107,7 +110,11 @@ impl PluginSession {
             let dt = self.physics_duration;
             let cols = self.simulation_cols;
             let rows = self.simulation_rows;
-            self.plugin.as_mut().unwrap().saver_mut().update(dt, cols, rows);
+            self.plugin
+                .as_mut()
+                .unwrap()
+                .saver_mut()
+                .update(dt, cols, rows);
             self.physics_accumulator -= dt;
         }
     }

@@ -61,7 +61,8 @@ unsafe extern "C" fn simple_pam_conv(
     }
 
     unsafe {
-        let resp_arr = libc::malloc(num_msg as usize * std::mem::size_of::<pam_response>()) as *mut pam_response;
+        let resp_arr = libc::malloc(num_msg as usize * std::mem::size_of::<pam_response>())
+            as *mut pam_response;
         if resp_arr.is_null() {
             return 5; // PAM_BUF_ERR
         }
@@ -134,7 +135,10 @@ fn read_password() -> std::io::Result<String> {
     }
     println!();
 
-    Ok(line.trim_end_matches('\n').trim_end_matches('\r').to_string())
+    Ok(line
+        .trim_end_matches('\n')
+        .trim_end_matches('\r')
+        .to_string())
 }
 
 pub fn run_failsafe_lock() -> anyhow::Result<()> {
@@ -184,12 +188,16 @@ pub fn spawn_failsafe_locker() -> Result<(), String> {
         "weston-terminal",
     ];
 
-    let current_exe = std::env::current_exe()
-        .map_err(|e| format!("failed to get current exe path: {e}"))?;
+    let current_exe =
+        std::env::current_exe().map_err(|e| format!("failed to get current exe path: {e}"))?;
 
     let mut term_bin = None;
     for term in &term_emulators {
-        if std::process::Command::new("which").arg(term).output().is_ok() {
+        if std::process::Command::new("which")
+            .arg(term)
+            .output()
+            .is_ok()
+        {
             term_bin = Some(*term);
             break;
         }
@@ -208,8 +216,12 @@ pub fn spawn_failsafe_locker() -> Result<(), String> {
             cmd.arg("-e").arg(&current_exe).arg("failsafe-lock");
         }
 
-        let mut child = cmd.spawn().map_err(|e| format!("failed to spawn terminal: {e}"))?;
-        let status = child.wait().map_err(|e| format!("failed to wait for locker: {e}"))?;
+        let mut child = cmd
+            .spawn()
+            .map_err(|e| format!("failed to spawn terminal: {e}"))?;
+        let status = child
+            .wait()
+            .map_err(|e| format!("failed to wait for locker: {e}"))?;
 
         if status.success() {
             tracing::info!("Failsafe locker successfully authenticated user.");

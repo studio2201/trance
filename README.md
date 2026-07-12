@@ -6,6 +6,8 @@
 
 # Trance
 
+[![CI](https://github.com/crateria/trance/actions/workflows/ci.yml/badge.svg)](https://github.com/crateria/trance/actions/workflows/ci.yml)
+
 Wayland-native modular screensaver daemon and desktop suite for Linux.
 
 ## Documentation & Installation

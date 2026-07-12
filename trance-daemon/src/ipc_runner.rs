@@ -2,9 +2,9 @@
 
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
-use trance_ipc::{SharedMemory, FfiTerminalCell, IpcCommand, IpcResponse, compute_shm_size};
-use trance_runner::plugin_session::PluginSession;
+use trance_ipc::{FfiTerminalCell, IpcCommand, IpcResponse, SharedMemory, compute_shm_size};
 use trance_runner::launcher::LaunchMode;
+use trance_runner::plugin_session::PluginSession;
 
 pub fn run_ipc_runner(
     saver_name: &str,
@@ -47,7 +47,8 @@ pub fn run_ipc_runner(
     }
 
     // 4. Send Ready response
-    IpcResponse::Ready.write_to(&mut socket)
+    IpcResponse::Ready
+        .write_to(&mut socket)
         .map_err(|e| format!("failed to send Ready response: {}", e))?;
 
     // 5. Command loop
@@ -70,7 +71,8 @@ pub fn run_ipc_runner(
         match command {
             IpcCommand::Init { cols: c, rows: r } => {
                 session.init(c as usize, r as usize);
-                IpcResponse::Ack.write_to(&mut socket)
+                IpcResponse::Ack
+                    .write_to(&mut socket)
                     .map_err(|e| format!("failed to send Ack: {}", e))?;
             }
             IpcCommand::TickAndDraw { dt_micros } => {
@@ -91,12 +93,14 @@ pub fn run_ipc_runner(
                     header.frame_counter = header.frame_counter.wrapping_add(1);
                 }
 
-                IpcResponse::FrameReady { scanlines }.write_to(&mut socket)
+                IpcResponse::FrameReady { scanlines }
+                    .write_to(&mut socket)
                     .map_err(|e| format!("failed to send FrameReady: {}", e))?;
             }
             IpcCommand::SetSimulationRate { hz } => {
                 session.set_simulation_rate(hz);
-                IpcResponse::Ack.write_to(&mut socket)
+                IpcResponse::Ack
+                    .write_to(&mut socket)
                     .map_err(|e| format!("failed to send Ack: {}", e))?;
             }
             IpcCommand::Stop => {
