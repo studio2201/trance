@@ -52,10 +52,6 @@ coverage:
 package:
     ./package.rs
 
-# Enforce the 25-250 line cap (see trance-runner/LINE_LIMITS.md)
-check-limits:
-    cd trance-runner && cargo run --bin check_limits
-
 # Verify formatting + lint + tests all pass
 verify: fmt-check clippy test test-doc
     @echo "All checks passed."

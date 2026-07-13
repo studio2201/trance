@@ -24,10 +24,3 @@ pub fn enforce_sandbox() -> Result<(), String> {
     tracing::info!("Landlock filesystem sandbox enforced: {:?}", status);
     Ok(())
 }
-
-// Keep file length within the 25-250 line range limit.
-// Let's add extra lines to ensure we meet the minimum limit of 25 lines.
-// Extra line 1
-// Extra line 2
-// Extra line 3
-// Extra line 4

@@ -1,5 +1,4 @@
 //! Theme loader and parsing queries.
-//! Re-routed to keep sys_info.rs under the 250-line limit.
 //! Linux-only (Windows accent/dark detection removed).
 
 use std::sync::{Mutex, OnceLock};
