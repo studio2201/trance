@@ -37,6 +37,12 @@ allow = [
     "CDLA-Permissive-2.0",
     "0BSD",
     "bzip2-1.0.6",
+    "BSL-1.0",
+    "GPL-3.0-only",
+    "GPL-3.0-or-later",
+    "LGPL-3.0-only",
+    "LGPL-3.0-or-later",
+    "Unlicense",
 ]
 confidence-threshold = 0.8
 
@@ -46,6 +52,56 @@ expression = "MIT AND ISC AND OpenSSL"
 license-files = [
     { path = "LICENSE", hash = 0xbd0eed23 },
 ]
+
+[[licenses.clarify]]
+name = "mime"
+expression = "MIT OR Apache-2.0"
+license-files = []
+
+[[licenses.clarify]]
+name = "xdg-shell-wrapper-config"
+expression = "MIT OR Apache-2.0"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-config"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-config-derive"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-panel-config"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-settings-daemon"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "cosmic-theme"
+expression = "GPL-3.0-only"
+license-files = []
+
+[[licenses.clarify]]
+name = "dnd"
+expression = "MIT OR Apache-2.0"
+license-files = []
+
+[[licenses.clarify]]
+name = "iced_accessibility"
+expression = "MIT OR Apache-2.0"
+license-files = []
+
+[[licenses.clarify]]
+name = "libcosmic"
+expression = "GPL-3.0-only"
+license-files = []
 
 [bans]
 multiple-versions = "warn"
@@ -61,5 +117,29 @@ unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
 allow-git = [
     "https://github.com/UberMetroid/shared-assets",
-    "https://github.com/UberMetroid/shared-assets.git"
+    "https://github.com/UberMetroid/shared-assets.git",
+    "https://github.com/iced-rs/cryoglyph",
+    "https://github.com/iced-rs/cryoglyph.git",
+    "https://github.com/jackpot51/rust-atomicwrites",
+    "https://github.com/jackpot51/rust-atomicwrites.git",
+    "https://github.com/pop-os/cosmic-panel",
+    "https://github.com/pop-os/cosmic-panel.git",
+    "https://github.com/pop-os/cosmic-protocols",
+    "https://github.com/pop-os/cosmic-protocols.git",
+    "https://github.com/pop-os/dbus-settings-bindings",
+    "https://github.com/pop-os/dbus-settings-bindings.git",
+    "https://github.com/pop-os/freedesktop-icons",
+    "https://github.com/pop-os/freedesktop-icons.git",
+    "https://github.com/pop-os/libcosmic",
+    "https://github.com/pop-os/libcosmic.git",
+    "https://github.com/pop-os/smithay-clipboard",
+    "https://github.com/pop-os/smithay-clipboard.git",
+    "https://github.com/pop-os/softbuffer",
+    "https://github.com/pop-os/softbuffer.git",
+    "https://github.com/pop-os/window_clipboard",
+    "https://github.com/pop-os/window_clipboard.git",
+    "https://github.com/pop-os/winit",
+    "https://github.com/pop-os/winit.git",
+    "https://github.com/wash2/accesskit",
+    "https://github.com/wash2/accesskit.git"
 ]
