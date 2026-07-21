@@ -1,5 +1,5 @@
-use std::process::Command;
 use anyhow::Result;
+use std::process::Command;
 
 use super::doctor_checks::{
     CheckResult, check_config_parses, check_dbus, check_fonts, check_package_install,

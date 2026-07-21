@@ -28,7 +28,8 @@ pub fn initialize_ipc_session(
 ) -> Result<SessionInitResult, String> {
     let session_idx = SESSION_COUNTER.fetch_add(1, Ordering::Relaxed);
     let rand_val = std::process::id();
-    let socket_path = std::env::temp_dir().join(format!("trance-uds-{}-{}.sock", rand_val, session_idx));
+    let socket_path =
+        std::env::temp_dir().join(format!("trance-uds-{}-{}.sock", rand_val, session_idx));
     if socket_path.exists() {
         let _ = fs::remove_file(&socket_path);
     }
@@ -50,8 +51,8 @@ pub fn initialize_ipc_session(
         header.frame_counter = 0;
     }
 
-    let current_exe = std::env::current_exe()
-        .map_err(|e| format!("failed to get current exe path: {}", e))?;
+    let current_exe =
+        std::env::current_exe().map_err(|e| format!("failed to get current exe path: {}", e))?;
 
     let gpu_str = gpu_enabled.to_string();
     let scale_str = format!("{:.6}", render_scale);

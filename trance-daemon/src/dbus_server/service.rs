@@ -242,6 +242,10 @@ impl TranceService {
     async fn authorize_control(&self, header: &zbus::message::Header<'_>) -> zbus::fdo::Result<()> {
         super::service_helpers::authorize_control(&self.controller, header).await
     }
-    fn live_status(&self) -> DaemonStatus { super::service_helpers::live_status(&self.controller) }
-    fn sync_config_status(&self) { super::service_helpers::sync_config_status(&self.controller); }
+    fn live_status(&self) -> DaemonStatus {
+        super::service_helpers::live_status(&self.controller)
+    }
+    fn sync_config_status(&self) {
+        super::service_helpers::sync_config_status(&self.controller);
+    }
 }

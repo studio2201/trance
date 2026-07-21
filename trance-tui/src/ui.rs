@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 // Copyright 2026 crateria
 
+use super::app::{ActivePane, App};
 use ratatui::{
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style, Stylize},
     text::Line,
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph},
 };
-use super::app::{ActivePane, App};
 
 pub fn display_saver_name(raw: &str) -> String {
     if raw.eq_ignore_ascii_case("random") || raw == "Random selection" {

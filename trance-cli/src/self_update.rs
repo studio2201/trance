@@ -2,8 +2,8 @@
 
 //! Check whether a newer *system package* is available.
 
-use std::process::Command;
 use anyhow::Result;
+use std::process::Command;
 
 use super::self_update_backend::{Backend, detect_backend, stdout_trim};
 

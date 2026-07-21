@@ -56,7 +56,9 @@ pub fn check_dbus() -> CheckResult {
         }
     } else {
         println!(" [✗] D-Bus Service: Could not connect to org.crateria.Trance via D-Bus.");
-        println!("     -> Fix: Ensure trance-daemon is running (systemctl --user start trance-daemon).");
+        println!(
+            "     -> Fix: Ensure trance-daemon is running (systemctl --user start trance-daemon)."
+        );
         chk("D-Bus Service", false, "cannot connect")
     }
 }
@@ -97,13 +99,20 @@ pub fn check_running_pid() -> CheckResult {
                     println!(" [✔] Process Status: Daemon process is running (PID {pid}).");
                     return chk("Process Status", true, format!("PID {pid} running"));
                 } else {
-                    println!(" [✗] Process Status: PID file exists ({pid}), but process is NOT running (stale PID).");
-                    println!("     -> Fix: Remove stale PID file or restart daemon: systemctl --user restart trance-daemon");
+                    println!(
+                        " [✗] Process Status: PID file exists ({pid}), but process is NOT running (stale PID)."
+                    );
+                    println!(
+                        "     -> Fix: Remove stale PID file or restart daemon: systemctl --user restart trance-daemon"
+                    );
                     return chk("Process Status", false, format!("stale PID {pid}"));
                 }
             }
         }
-        println!(" [!] Process Status: PID file exists at '{}', but content is unreadable.", pid_path.display());
+        println!(
+            " [!] Process Status: PID file exists at '{}', but content is unreadable.",
+            pid_path.display()
+        );
         chk("Process Status", true, "pid file unreadable")
     } else if dbus_ok {
         println!(" [!] Process Status: Connected to daemon via D-Bus, but PID file is missing.");
@@ -124,13 +133,19 @@ pub fn check_config_parses() -> CheckResult {
                 chk("Configuration", true, format!("{n} lines"))
             }
             Err(e) => {
-                println!(" [✗] Configuration: Found at '{}' but unreadable: {e}", path.display());
+                println!(
+                    " [✗] Configuration: Found at '{}' but unreadable: {e}",
+                    path.display()
+                );
                 chk("Configuration", false, format!("unreadable: {e}"))
             }
         },
         Some(path) => {
             println!(" [!] Configuration: File not found. Default settings will be used.");
-            println!("     -> Note: Config file path is expected at '{}'.", path.display());
+            println!(
+                "     -> Note: Config file path is expected at '{}'.",
+                path.display()
+            );
             chk("Configuration", true, "default settings")
         }
         None => {
@@ -153,7 +168,12 @@ pub fn check_fonts() -> CheckResult {
 
 pub fn check_package_install() -> CheckResult {
     if let Ok(o) = Command::new("rpm")
-        .args(["-q", "trance", "--qf", "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}"])
+        .args([
+            "-q",
+            "trance",
+            "--qf",
+            "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}",
+        ])
         .output()
         && o.status.success()
     {
@@ -186,11 +206,19 @@ fn pid_file_path() -> PathBuf {
 }
 
 fn get_config_path() -> Option<PathBuf> {
-    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME").ok().filter(|s| !s.is_empty()) {
+    if let Some(xdg_config) = std::env::var("XDG_CONFIG_HOME")
+        .ok()
+        .filter(|s| !s.is_empty())
+    {
         return Some(PathBuf::from(xdg_config).join("trance").join("config.yaml"));
     }
     let home = std::env::var("HOME").ok()?;
-    Some(PathBuf::from(home).join(".config").join("trance").join("config.yaml"))
+    Some(
+        PathBuf::from(home)
+            .join(".config")
+            .join("trance")
+            .join("config.yaml"),
+    )
 }
 
 fn font_check_via_fc_list() -> bool {
