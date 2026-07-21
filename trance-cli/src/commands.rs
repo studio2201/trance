@@ -174,7 +174,7 @@ pub fn print_version(verbose: bool) {
     }
     println!("Trance screensaver control CLI");
     println!("License: Apache-2.0");
-    println!("Home:    https://github.com/crateria/trance");
+    println!("Home:    https://github.com/studio2201/trance");
     if let Some(pkg) = package_version_hint() {
         println!("Package: {pkg}");
     }

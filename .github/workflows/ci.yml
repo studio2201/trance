@@ -1,4 +1,4 @@
-# CI for crateria/trance
+# CI for studio2201/trance
 # Requires: Actions allow GitHub-owned actions (checkout, cache).
 # Required status checks on main: "Security advisories" and "Tests".
 name: CI
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout code
         run: |
           git init
-          git remote add origin https://github.com/crateria/trance.git
+          git remote add origin https://github.com/studio2201/trance.git
           git fetch --depth=1 origin ${{ github.sha }}
           git reset --hard FETCH_HEAD
 
@@ -51,7 +51,7 @@ jobs:
       - name: Checkout code
         run: |
           git init
-          git remote add origin https://github.com/crateria/trance.git
+          git remote add origin https://github.com/studio2201/trance.git
           git fetch --depth=1 origin ${{ github.sha }}
           git reset --hard FETCH_HEAD
 
@@ -86,7 +86,7 @@ jobs:
           git add -A
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "style: auto-format and apply clippy fixes"
-            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/crateria/trance.git
+            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/studio2201/trance.git
             git push origin HEAD:${{ github.head_ref || github.ref_name }}
           fi
 

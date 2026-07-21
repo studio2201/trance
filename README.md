@@ -11,9 +11,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/crateria/trance/actions/workflows/ci.yml"><img src="https://github.com/crateria/trance/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/crateria/trance/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
-  <a href="https://github.com/crateria/trance"><img src="https://img.shields.io/badge/language-Rust-orange.svg" alt="Rust"></a>
+  <a href="https://github.com/studio2201/trance/actions/workflows/ci.yml"><img src="https://github.com/studio2201/trance/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/studio2201/trance/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"></a>
+  <a href="https://github.com/studio2201/trance"><img src="https://img.shields.io/badge/language-Rust-orange.svg" alt="Rust"></a>
 </p>
 
 ---

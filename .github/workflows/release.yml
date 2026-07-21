@@ -24,7 +24,7 @@ jobs:
       - name: Checkout code
         run: |
           git init
-          git remote add origin https://github.com/crateria/trance.git
+          git remote add origin https://github.com/studio2201/trance.git
           git fetch --depth=1 origin ${{ github.ref }}
           git reset --hard FETCH_HEAD
 
