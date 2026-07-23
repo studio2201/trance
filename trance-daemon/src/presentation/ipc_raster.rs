@@ -25,14 +25,7 @@ pub(crate) fn raster_viewport_into(
 ) {
     if hardware_scaling && !using_gpu_upscale {
         renderer.render_content_viewport_into(
-            grid,
-            grid_cols,
-            col_start,
-            row_start,
-            cols,
-            rows,
-            scanlines,
-            pixel_buf,
+            grid, grid_cols, col_start, row_start, cols, rows, scanlines, pixel_buf,
         );
         return;
     }
@@ -50,12 +43,5 @@ pub(crate) fn raster_viewport_into(
         content_buf,
     );
 
-    upscaler.upscale_stretch_into(
-        content_buf,
-        content_w,
-        content_h,
-        width,
-        height,
-        pixel_buf,
-    );
+    upscaler.upscale_stretch_into(content_buf, content_w, content_h, width, height, pixel_buf);
 }

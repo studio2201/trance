@@ -72,11 +72,7 @@ impl TranceService {
     ) -> zbus::fdo::Result<()> {
         authorize_control(&self.controller, &header).await?;
         let saver = (!name.is_empty()).then(|| name.to_string());
-        apply_config_command(
-            &self.controller,
-            DaemonCommand::SetSaver(saver),
-            "SetSaver",
-        )
+        apply_config_command(&self.controller, DaemonCommand::SetSaver(saver), "SetSaver")
     }
 
     async fn list_savers(&self) -> zbus::fdo::Result<Vec<String>> {

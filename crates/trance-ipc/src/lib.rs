@@ -115,7 +115,8 @@ mod proptests {
             (any::<u32>(), any::<u32>()).prop_map(|(cols, rows)| IpcCommand::Init { cols, rows }),
             any::<u64>().prop_map(|dt_micros| IpcCommand::TickAndDraw { dt_micros }),
             any::<f32>().prop_filter_map("finite hz", |hz| {
-                hz.is_finite().then_some(IpcCommand::SetSimulationRate { hz })
+                hz.is_finite()
+                    .then_some(IpcCommand::SetSimulationRate { hz })
             }),
             Just(IpcCommand::Stop),
         ]

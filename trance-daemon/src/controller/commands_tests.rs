@@ -198,16 +198,8 @@ fn validate_render_scale_in_range() {
 
 #[test]
 fn normalize_render_scale_handles_edges() {
-    assert!(
-        normalize_render_scale(None)
-            .expect("None ok")
-            .is_none()
-    );
-    assert!(
-        normalize_render_scale(Some(0.0))
-            .expect("0.0 ok")
-            .is_none()
-    );
+    assert!(normalize_render_scale(None).expect("None ok").is_none());
+    assert!(normalize_render_scale(Some(0.0)).expect("0.0 ok").is_none());
     assert!(
         normalize_render_scale(Some(-1.0))
             .expect("-1.0 ok")
