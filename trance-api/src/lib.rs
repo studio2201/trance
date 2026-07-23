@@ -50,7 +50,7 @@ pub use monitor::{
     clear_primary_bounds, get_primary_monitor_bounds, is_secondary_monitor, publish_primary_bounds,
 };
 pub use palette::ScreenPalette;
-pub use rng::LcgRng;
+pub use rng::{LcgRng, seed_from_env, SEED_ENV_KEYS};
 pub use screensaver::{GpuSpotlight, Screensaver, ScreensaverInstance, ScreensaverState};
 pub use system_info::SystemInfo;
 pub use terminal_cell::TerminalCell;

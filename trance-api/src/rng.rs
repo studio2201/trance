@@ -1,3 +1,27 @@
+
+/// Environment keys for deterministic offline export (`idle-render`).
+pub const SEED_ENV_KEYS: &[&str] = &["IDLE_RENDER_SEED", "TRANCE_SEED"];
+
+/// Parse a seed from the process environment, if set and valid.
+pub fn seed_from_env() -> Option<u64> {
+    for key in SEED_ENV_KEYS {
+        if let Ok(raw) = std::env::var(key) {
+            let s = raw.trim();
+            if s.is_empty() {
+                continue;
+            }
+            if let Some(hex) = s.strip_prefix("0x").or_else(|| s.strip_prefix("0X")) {
+                if let Ok(v) = u64::from_str_radix(hex, 16) {
+                    return Some(v);
+                }
+            } else if let Ok(v) = s.parse::<u64>() {
+                return Some(v);
+            }
+        }
+    }
+    None
+}
+
 /// Linear Congruential Generator. Deterministic, lock-free.
 ///
 /// # Example
@@ -23,6 +47,14 @@ impl LcgRng {
             .map(|d| d.as_nanos() as u64)
             .unwrap_or(1);
         Self::new(seed)
+    }
+
+    /// Prefer `IDLE_RENDER_SEED` or `TRANCE_SEED` (decimal or 0x-hex); else random.
+    pub fn from_env_or_random() -> Self {
+        match seed_from_env() {
+            Some(s) => Self::new(s),
+            None => Self::new_random(),
+        }
     }
 
     pub fn next_u64(&mut self) -> u64 {
@@ -161,5 +193,24 @@ mod proptests {
                 prop_assert!((0.0..1.0).contains(&f), "f={f}");
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod seed_env_tests {
+    use super::*;
+
+    #[test]
+    fn seed_from_env_decimal() {
+        unsafe { std::env::set_var("IDLE_RENDER_SEED", "12345"); }
+        assert_eq!(seed_from_env(), Some(12345));
+        unsafe { std::env::remove_var("IDLE_RENDER_SEED"); }
+    }
+
+    #[test]
+    fn seed_from_env_hex() {
+        unsafe { std::env::set_var("TRANCE_SEED", "0x10"); }
+        assert_eq!(seed_from_env(), Some(16));
+        unsafe { std::env::remove_var("TRANCE_SEED"); }
     }
 }
