@@ -32,7 +32,10 @@ pub fn run(controller: Arc<DaemonController>) -> anyhow::Result<()> {
 async fn serve(controller: Arc<DaemonController>) -> anyhow::Result<()> {
     let (status_emit_tx, status_emit_rx) = std::sync::mpsc::channel();
     {
-        let mut slot = controller.status_emit_tx.lock().unwrap_or_else(|e| e.into_inner());
+        let mut slot = controller
+            .status_emit_tx
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         *slot = Some(status_emit_tx);
     }
 

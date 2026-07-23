@@ -39,7 +39,12 @@ impl InhibitorState {
     }
 
     pub fn is_inhibited(&self) -> bool {
-        if !self.inhibitors.lock().unwrap_or_else(|e| e.into_inner()).is_empty() {
+        if !self
+            .inhibitors
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .is_empty()
+        {
             return true;
         }
 

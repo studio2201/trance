@@ -14,7 +14,11 @@ impl DaemonController {
         current_saver: &str,
     ) {
         // Snapshot config once per tick (avoids double lock+clone in dirty/copy).
-        let config = self.config.lock().unwrap_or_else(|e| e.into_inner()).clone();
+        let config = self
+            .config
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .clone();
         let mut status = self.status.lock().unwrap_or_else(|e| e.into_inner());
         let changed = Self::compute_dirty_fields(
             &mut status,

@@ -11,10 +11,7 @@ impl DaemonController {
     where
         F: FnOnce(&mut DaemonConfig),
     {
-        let mut config = self
-            .config
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let mut config = self.config.lock().unwrap_or_else(|e| e.into_inner());
         f(&mut config);
         config.save().context("saving config")?;
         self.mark_dirty();

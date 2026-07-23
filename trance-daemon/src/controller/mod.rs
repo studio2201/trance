@@ -72,7 +72,10 @@ impl DaemonController {
     }
 
     pub fn set_dbus_connection(&self, connection: zbus::Connection) {
-        *self.dbus_connection.lock().unwrap_or_else(|e| e.into_inner()) = Some(connection);
+        *self
+            .dbus_connection
+            .lock()
+            .unwrap_or_else(|e| e.into_inner()) = Some(connection);
     }
 
     pub fn dbus_connection(&self) -> Result<zbus::Connection, String> {
@@ -87,8 +90,17 @@ impl DaemonController {
         if !self.take_dirty() {
             return;
         }
-        let status = self.status.lock().unwrap_or_else(|e| e.into_inner()).clone();
-        if let Some(sender) = self.status_emit_tx.lock().unwrap_or_else(|e| e.into_inner()).as_ref() {
+        let status = self
+            .status
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .clone();
+        if let Some(sender) = self
+            .status_emit_tx
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .as_ref()
+        {
             let _ = sender.send(status);
         }
     }
