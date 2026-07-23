@@ -14,7 +14,7 @@ trance-runner = { workspace = true }
 
 [package.metadata.deb]
 name = "trance-tui"
-maintainer = "crateria <jerydleuck@gmail.com>"
+maintainer = "IdleScreen <jerydleuck@gmail.com>"
 extended-description = "TUI client for screensaver daemon configuration."
 depends = "libc6, trance"
 section = "utils"

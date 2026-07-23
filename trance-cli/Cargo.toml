@@ -1,6 +1,6 @@
 [package]
 name = "trance-cli"
-version = "1.0.38"
+version = "1.0.39"
 edition = "2024"
 description = "Command-line interface for the trance screensaver daemon"
 license = "Apache-2.0"
@@ -27,8 +27,8 @@ tracing-journald = { workspace = true, optional = true }
 [package.metadata.deb]
 name = "trance-cli"
 changelog = "debian/changelog"
-copyright = "2026 crateria"
-maintainer = "crateria <jerydleuck@gmail.com>"
+copyright = "2026 IdleScreen"
+maintainer = "IdleScreen <jerydleuck@gmail.com>"
 extended-description = "Thin CLI for controlling the trance screensaver daemon over D-Bus."
 depends = "libc6, trance"
 section = "utils"

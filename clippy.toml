@@ -1,4 +1,4 @@
-# Clippy configuration for all crateria workspaces.
+# Clippy configuration for all IdleScreen workspaces.
 # Schema validated against clippy 0.1.96.
 
 # Allow expect/unwrap in tests.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 use anyhow::{Context, Result, bail};
 use trance_dbus::{TranceClient, daemon_available};
@@ -174,7 +174,7 @@ pub fn print_version(verbose: bool) {
     }
     println!("Trance screensaver control CLI");
     println!("License: Apache-2.0");
-    println!("Home:    https://github.com/studio2201/trance");
+    println!("Home:    https://github.com/idlescreen/idlescreen");
     if let Some(pkg) = package_version_hint() {
         println!("Package: {pkg}");
     }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum IpcCommand {

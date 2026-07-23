@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 //! Fullscreen Wayland overlays using [`zwlr_layer_shell_v1`].
 //!

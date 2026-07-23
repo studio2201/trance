@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 //! D-Bus API for the trance screensaver daemon (`io.github.ubermetroid.trance`).
 //!

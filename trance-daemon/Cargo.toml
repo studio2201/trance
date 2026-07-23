@@ -1,6 +1,6 @@
 [package]
 name = "trance-daemon"
-version = "1.0.38"
+version = "1.0.39"
 edition = "2024"
 description = "Background idle daemon and core package for trance screensavers"
 license = "Apache-2.0"
@@ -35,8 +35,8 @@ tracing-journald = "0.3.2"
 [package.metadata.deb]
 name = "trance"
 changelog = "debian/changelog"
-copyright = "2026 crateria"
-maintainer = "crateria <jerydleuck@gmail.com>"
+copyright = "2026 IdleScreen"
+maintainer = "IdleScreen <jerydleuck@gmail.com>"
 extended-description = "Background idle monitoring service for trance screensavers."
 # NOTE (2026): `libvulkan1`/`libgl1` dependency removed — the previous
 # GPU upscaler was renamed to `trance-upscaler` and is now pure CPU code,

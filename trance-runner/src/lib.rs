@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 //! Vendored subset of the `library` crate, scoped to what screensaver-security
 //! actually uses. See `LIBRARY_VENDORED.md` for the full list of source

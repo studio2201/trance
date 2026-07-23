@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Copyright 2026 crateria
+// Copyright 2026 IdleScreen
 
 //! Lightweight shared API definitions, traits, and math utilities for terminal
 //! screensaver plugins. Host applications register callbacks for live system

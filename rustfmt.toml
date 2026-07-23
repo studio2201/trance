@@ -1,4 +1,4 @@
-# Rust formatter configuration for all crateria workspaces.
+# Rust formatter configuration for all IdleScreen workspaces.
 
 edition = "2024"
 max_width = 100

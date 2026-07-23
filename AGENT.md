@@ -1,4 +1,4 @@
-# AGENT.md — Crateria hardening contract
+# AGENT.md — IdleScreen hardening contract
 
 Enforce on every change in this repository.
 
@@ -21,6 +21,13 @@ Enforce on every change in this repository.
 - Protocol, parsing, path safety, and package index logic must have
   **proptest** (or equivalent property) tests.
 - Prefer deterministic unit tests; integration tests for CLI boundaries.
+
+## Product identity
+
+- GitHub org and product brand: **IdleScreen** (`idlescreen`).
+- Historical crate, binary, and Debian package names (`trance`, `trance-*`)
+  remain for API and install stability until a coordinated major rename.
+- Historical D-Bus well-known names stay for ABI continuity.
 
 ## Git edges
 

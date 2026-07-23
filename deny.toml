@@ -1,4 +1,4 @@
-# cargo-deny configuration for all crateria workspaces.
+# cargo-deny configuration for all IdleScreen workspaces.
 # Enforces supply-chain, license, and source safety.
 
 [graph]

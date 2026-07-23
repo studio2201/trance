@@ -2589,7 +2589,7 @@ dependencies = [
 
 [[package]]
 name = "trance-api"
-version = "1.0.38"
+version = "1.0.39"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -2597,7 +2597,7 @@ dependencies = [
 
 [[package]]
 name = "trance-cli"
-version = "1.0.38"
+version = "1.0.39"
 dependencies = [
  "anyhow",
  "libc",
@@ -2609,7 +2609,7 @@ dependencies = [
 
 [[package]]
 name = "trance-daemon"
-version = "1.0.38"
+version = "1.0.39"
 dependencies = [
  "anyhow",
  "futures-lite",
@@ -2655,7 +2655,7 @@ version = "0.3.62"
 
 [[package]]
 name = "trance-runner"
-version = "1.0.38"
+version = "1.0.39"
 dependencies = [
  "bytemuck",
  "crossterm",
