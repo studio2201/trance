@@ -1,6 +1,4 @@
-# CI for studio2201/trance
-# Requires: Actions allow GitHub-owned actions (checkout, cache).
-# Required status checks on master: "Security advisories" and "Tests".
+# CI for crateria/trance
 name: CI
 
 on:
@@ -27,12 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Checkout code
-        run: |
-          git init
-          git remote add origin https://github.com/studio2201/trance.git
-          git fetch --depth=1 origin ${{ github.sha }}
-          git reset --hard FETCH_HEAD
+      - uses: actions/checkout@v4
 
       - name: Install cargo-deny
         run: |
@@ -48,12 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - name: Checkout code
-        run: |
-          git init
-          git remote add origin https://github.com/studio2201/trance.git
-          git fetch --depth=1 origin ${{ github.sha }}
-          git reset --hard FETCH_HEAD
+      - uses: actions/checkout@v4
 
       - name: Install system libraries
         run: |
@@ -86,7 +74,6 @@ jobs:
           git add -A
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "style: auto-format and apply clippy fixes"
-            git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/studio2201/trance.git
             git push origin HEAD:${{ github.head_ref || github.ref_name }}
           fi
 
@@ -115,8 +102,7 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
 
       - name: Install cargo-deb and cargo-generate-rpm
-        run: |
-          cargo binstall -y cargo-deb cargo-generate-rpm
+        run: cargo binstall -y cargo-deb cargo-generate-rpm
 
       - name: Build release binaries
         run: |
@@ -139,5 +125,3 @@ jobs:
           cargo generate-rpm -p trance-plugins-all
           cargo generate-rpm -p trance-applet
           cargo generate-rpm -p trance-tui
-
-
