@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=IdleScreen
+Comment=IdleScreen screensaver & ambient control panel applet
+Type=Application
+Exec=cosmic-idle
+Terminal=false
+Categories=COSMIC;
+Keywords=COSMIC;Applet;Idle;Screensaver;
+Icon=idlescreen-beams
+NoDisplay=true
+X-CosmicApplet=true
+X-CosmicShrinkable=true
+X-CosmicHoverPopup=Auto
+X-OverflowPriority=50
