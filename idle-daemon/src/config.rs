@@ -24,6 +24,7 @@ pub struct DaemonConfig {
     pub render_scale: Option<f32>,
     /// Per-saver custom parameters (e.g. speed, density)
     pub saver_params: std::collections::BTreeMap<String, String>,
+    pub theme: idle_api::Theme,
 }
 
 impl Default for DaemonConfig {
@@ -36,6 +37,7 @@ impl Default for DaemonConfig {
             show_fps_overlay: false,
             render_scale: None,
             saver_params: std::collections::BTreeMap::new(),
+            theme: idle_api::Theme::default(),
         }
     }
 }
@@ -127,14 +129,16 @@ impl DaemonConfig {
              idle_enabled: {}\n\
              gpu_enabled: false\n\
              show_fps_overlay: {}\n\
-             render_scale: {}\n",
+             render_scale: {}\n\
+             theme: \"{}\"\n",
             self.idle_timeout_mins,
             active_str,
             self.idle_enabled,
             self.show_fps_overlay,
             self.render_scale
                 .map(|s| s.to_string())
-                .unwrap_or_else(|| "null".to_string())
+                .unwrap_or_else(|| "null".to_string()),
+            self.theme,
         );
 
         if !self.saver_params.is_empty() {

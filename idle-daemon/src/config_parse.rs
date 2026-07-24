@@ -24,6 +24,11 @@ pub(crate) fn apply_config_key(config: &mut DaemonConfig, key: &str, val: &str) 
             }
         }
         "render_scale" => apply_render_scale(config, val),
+        "theme" => {
+            if let Ok(theme) = val.parse::<idle_api::Theme>() {
+                config.theme = theme;
+            }
+        }
         _ => {}
     }
 }
