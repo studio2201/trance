@@ -116,8 +116,7 @@ our lane.
 | render / idle-studio | Export: pure sim + raster + encode (no compositor) |
 | idle-tui | Control-plane client (terminal) |
 | app-* | Platform chrome / metapackage (DE or store) |
-| packages | Distribution host for Linux packages |
-| idle-pro / brand | Business and brand, not runtime |
+| brand | Brand assets, not runtime |
 
 ## Explicit refusals
 
