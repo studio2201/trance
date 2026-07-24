@@ -138,7 +138,9 @@ fn handle_apt_update() -> Result<()> {
                 println!("     -> Run: sudo apt update && sudo apt install idlescreen");
             } else if !versions_equalish(&inst, &cand) {
                 println!(" [!] Upgrade available: {inst} -> {cand}");
-                println!("     -> Run: sudo apt update && sudo apt install --only-upgrade idlescreen");
+                println!(
+                    "     -> Run: sudo apt update && sudo apt install --only-upgrade idlescreen"
+                );
             } else {
                 println!(" [✔] IdleScreen is up to date.");
                 println!("     -> Upgrade anytime with: sudo apt update && sudo apt upgrade");
