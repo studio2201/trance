@@ -636,7 +636,7 @@ checksum = "dfa686283ad6dd069f105e5ab091b04c62850d3e4cf5d67debad1933f55023df"
 
 [[package]]
 name = "idle-api"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -644,7 +644,7 @@ dependencies = [
 
 [[package]]
 name = "idle-cli"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "anyhow",
  "idle-dbus",
@@ -656,7 +656,7 @@ dependencies = [
 
 [[package]]
 name = "idle-daemon"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "anyhow",
  "futures-lite",
@@ -680,7 +680,7 @@ dependencies = [
 
 [[package]]
 name = "idle-dbus"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "tracing",
  "zbus",
@@ -688,7 +688,7 @@ dependencies = [
 
 [[package]]
 name = "idle-ipc"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "idle-api",
  "libc",
@@ -697,11 +697,11 @@ dependencies = [
 
 [[package]]
 name = "idle-plugins-all"
-version = "2.3.1"
+version = "2.3.2"
 
 [[package]]
 name = "idle-runner"
-version = "2.3.1"
+version = "2.3.2"
 dependencies = [
  "bytemuck",
  "crossterm",
@@ -724,7 +724,7 @@ dependencies = [
 
 [[package]]
 name = "idle-upscaler"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "bytemuck",
  "idle-api",
