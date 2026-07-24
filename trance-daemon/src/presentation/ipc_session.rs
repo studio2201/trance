@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-use std::fs;
 use std::os::unix::net::UnixStream;
 use std::path::PathBuf;
 use std::process::Child;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::AtomicBool;
 use std::time::Duration;
 use trance_api::TerminalCell;
 use trance_ipc::{IpcCommand, IpcResponse, SharedMemory};
@@ -17,7 +16,7 @@ use super::ipc_init::initialize_ipc_session;
 use super::ipc_raster::raster_viewport_into;
 
 pub struct IpcPluginSession {
-    saver_name: String,
+    pub(crate) saver_name: String,
     gpu_enabled: bool,
     render_scale: f32,
     renderer: CellRenderer,
@@ -27,11 +26,11 @@ pub struct IpcPluginSession {
     pixel_buf: Vec<u8>,
     hardware_scaling: bool,
 
-    child: Option<Child>,
-    socket: Option<UnixStream>,
-    shm: Option<SharedMemory>,
-    socket_path: Option<PathBuf>,
-    expected_stop: Arc<AtomicBool>,
+    pub(crate) child: Option<Child>,
+    pub(crate) socket: Option<UnixStream>,
+    pub(crate) shm: Option<SharedMemory>,
+    pub(crate) socket_path: Option<PathBuf>,
+    pub(crate) expected_stop: Arc<AtomicBool>,
 }
 
 impl IpcPluginSession {
@@ -106,43 +105,6 @@ impl IpcPluginSession {
         self.socket_path = Some(init_res.socket_path);
 
         Ok(())
-    }
-
-    /// True if the OOP plugin child is still running.
-    pub fn is_plugin_alive(&mut self) -> bool {
-        let Some(child) = self.child.as_mut() else {
-            return false;
-        };
-        match child.try_wait() {
-            Ok(None) => true,
-            Ok(Some(status)) => {
-                if !self.expected_stop.load(Ordering::Relaxed) {
-                    tracing::error!(?status, "plugin child exited unexpectedly");
-                }
-                false
-            }
-            Err(e) => {
-                tracing::error!(%e, "plugin child status query failed");
-                false
-            }
-        }
-    }
-
-    /// Tear down and re-spawn the OOP plugin process (crash isolation).
-    pub fn recover(&mut self, cols: usize, rows: usize) -> Result<(), String> {
-        tracing::warn!(saver = %self.saver_name, "recovering OOP plugin session");
-        self.expected_stop.store(true, Ordering::Relaxed);
-        if let Some(mut child) = self.child.take() {
-            let _ = child.kill();
-            let _ = child.wait();
-        }
-        self.socket = None;
-        if let Some(path) = self.socket_path.take() {
-            let _ = fs::remove_file(path);
-        }
-        self.shm = None;
-        self.expected_stop = Arc::new(AtomicBool::new(false));
-        self.init(cols, rows)
     }
 
     pub fn set_simulation_rate(&mut self, fps: f32) {
@@ -233,21 +195,5 @@ impl IpcPluginSession {
         );
         let cap = self.pixel_buf.capacity();
         std::mem::replace(&mut self.pixel_buf, Vec::with_capacity(cap))
-    }
-}
-
-impl Drop for IpcPluginSession {
-    fn drop(&mut self) {
-        self.expected_stop.store(true, Ordering::Relaxed);
-        if let Some(ref mut socket) = self.socket {
-            let _ = IpcCommand::Stop.write_to(&mut *socket);
-        }
-        if let Some(ref mut child) = self.child {
-            let _ = child.kill();
-            let _ = child.wait();
-        }
-        if let Some(ref socket_path) = self.socket_path {
-            let _ = fs::remove_file(socket_path);
-        }
     }
 }

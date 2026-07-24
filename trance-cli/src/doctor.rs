@@ -1,10 +1,10 @@
 use anyhow::Result;
 use std::process::Command;
 
-use super::doctor_checks::{
-    CheckResult, check_config_parses, check_dbus, check_protocol_hints, check_running_pid,
-    check_shm_permissions, check_systemd_service, check_wayland, check_yaml_syntax,
-};
+use super::doctor_checks::CheckResult;
+use super::doctor_env::{check_protocol_hints, check_wayland};
+use super::doctor_fs::{check_config_parses, check_shm_permissions, check_yaml_syntax};
+use super::doctor_service::{check_dbus, check_running_pid, check_systemd_service};
 use super::doctor_sys::{check_fonts, check_package_install};
 
 /// Run diagnostics. When `fix` is true, attempt to reload/enable/restart the

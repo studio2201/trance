@@ -1758,7 +1758,7 @@ dependencies = [
 
 [[package]]
 name = "trance-api"
-version = "1.0.40"
+version = "1.0.41"
 dependencies = [
  "bytemuck",
  "proptest",
@@ -1766,7 +1766,7 @@ dependencies = [
 
 [[package]]
 name = "trance-cli"
-version = "1.0.40"
+version = "1.0.41"
 dependencies = [
  "anyhow",
  "libc",
@@ -1778,7 +1778,7 @@ dependencies = [
 
 [[package]]
 name = "trance-daemon"
-version = "1.0.40"
+version = "1.0.41"
 dependencies = [
  "anyhow",
  "futures-lite",
@@ -1810,11 +1810,10 @@ dependencies = [
 
 [[package]]
 name = "trance-ipc"
-version = "0.3.65"
+version = "0.3.66"
 dependencies = [
  "libc",
  "proptest",
- "tracing",
  "trance-api",
 ]
 
@@ -1824,7 +1823,7 @@ version = "0.3.62"
 
 [[package]]
 name = "trance-runner"
-version = "1.0.40"
+version = "1.0.41"
 dependencies = [
  "bytemuck",
  "crossterm",
@@ -1836,6 +1835,7 @@ dependencies = [
  "notify",
  "proptest",
  "sysinfo",
+ "tempfile",
  "thiserror",
  "tracing",
  "tracing-subscriber",

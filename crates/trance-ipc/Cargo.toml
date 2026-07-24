@@ -1,6 +1,6 @@
 [package]
 name = "trance-ipc"
-version = "0.3.65"
+version = "0.3.66"
 edition = "2024"
 description = "Out-of-process screensaver execution and shared memory IPC"
 license = "Apache-2.0"
@@ -8,7 +8,6 @@ license = "Apache-2.0"
 [dependencies]
 libc = { workspace = true }
 trance-api = { path = "../../trance-api" }
-tracing = { workspace = true }
 
 [dev-dependencies]
 proptest = "1"

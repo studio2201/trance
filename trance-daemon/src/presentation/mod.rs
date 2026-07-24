@@ -9,6 +9,7 @@
 mod frame_loop;
 mod frame_pacing;
 mod ipc_init;
+mod ipc_lifecycle;
 mod ipc_raster;
 mod ipc_session;
 mod layout;

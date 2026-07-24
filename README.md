@@ -60,11 +60,29 @@ Checks (mirrors CI on `master`):
 ```bash
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p trance-api -p trance-dbus -p trance-ipc -p trance-daemon
+cargo test --workspace
+cargo audit
+cargo deny check
 ```
 
 An optional multi-stage Alpine `Dockerfile` builds release binaries for
 containerized tooling. Desktop install prefers native packages.
+
+## Why IdleScreen (trust surface)
+
+Most screensaver stacks load arbitrary `.so` files next to the compositor
+session. IdleScreen is built so a bad plugin cannot quietly become a
+session-level implant:
+
+- **Allowlisted savers only** — unknown basenames never resolve to a binary.
+- **Trusted directory confinement** — plugin paths must canonicalize under
+  known roots; world-writable and non-root `/usr` plugins are refused.
+- **Crash-isolated OOP plugins** — out-of-process IPC sessions can recover
+  without taking down the host daemon.
+- **Pure idle policy** — lock/inhibit/preview decisions are unit-tested without
+  Wayland so regressions are cheap to catch.
+- **Doctor that ships** — `trance doctor` / `trance doctor --json` for
+  environment, D-Bus, service, and config health.
 
 ## Releases
 
@@ -86,9 +104,11 @@ containerized tooling. Desktop install prefers native packages.
 ## Administration CLI
 
 ```bash
-trance-cli status
-trance-cli enable | disable
-trance-cli preview <plugin>
+trance status
+trance enable | disable
+trance preview <plugin>
+trance doctor
+trance doctor --json
 ```
 
 ## License
