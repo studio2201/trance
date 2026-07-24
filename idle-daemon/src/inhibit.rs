@@ -56,7 +56,7 @@ impl InhibitorState {
         {
             let mut cache = self.logind_cache.lock().unwrap_or_else(|e| e.into_inner());
             if cache.1.elapsed() >= std::time::Duration::from_secs(2) {
-                cache.0 = check_logind_inhibited();
+                cache.0 = check_logind_inhibited() || check_mpris_playing();
                 cache.1 = std::time::Instant::now();
             }
             cache.0
@@ -185,8 +185,55 @@ fn check_logind_inhibited() -> bool {
     }
 }
 
+#[cfg(all(target_os = "linux", not(test)))]
+fn check_mpris_playing() -> bool {
+    let run_blocking = || {
+        let Ok(conn) = zbus::blocking::Connection::session() else {
+            return false;
+        };
+        let Ok(names_reply) = conn.call_method(
+            Some("org.freedesktop.DBus"),
+            "/org/freedesktop/DBus",
+            Some("org.freedesktop.DBus"),
+            "ListNames",
+            &(),
+        ) else {
+            return false;
+        };
+        let Ok(names): Result<Vec<String>, _> = names_reply.body().deserialize() else {
+            return false;
+        };
+        for name in names {
+            if name.starts_with("org.mpris.MediaPlayer2.") {
+                if let Ok(prop_reply) = conn.call_method(
+                    Some(name.as_str()),
+                    "/org/mpris/MediaPlayer2",
+                    Some("org.freedesktop.DBus.Properties"),
+                    "Get",
+                    &("org.mpris.MediaPlayer2.Player", "PlaybackStatus"),
+                ) {
+                    if let Ok(val) = prop_reply.body().deserialize::<zbus::zvariant::Value>() {
+                        if let Ok(status) = val.downcast::<String>() {
+                            if status == "Playing" {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        false
+    };
+
+    if tokio::runtime::Handle::try_current().is_ok() {
+        tokio::task::block_in_place(run_blocking)
+    } else {
+        run_blocking()
+    }
+}
+
 #[cfg(all(not(target_os = "linux"), not(test)))]
-fn check_logind_inhibited() -> bool {
+fn check_mpris_playing() -> bool {
     false
 }
 
