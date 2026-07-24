@@ -16,6 +16,7 @@ use super::refresh::wait_for_output_layouts;
 use crate::presentation::PresentationOptions;
 
 #[tracing::instrument(skip_all, fields(saver_name = %saver_name))]
+/// Run presentation using **out-of-process** plugin sessions only (crash isolation).
 pub fn run_plugin_loop(
     presenter: &OverlayPresenter,
     saver_name: &str,

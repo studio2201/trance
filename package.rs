@@ -12,7 +12,7 @@ const CRATES: &[&str] = &[
     "trance-daemon",
     "trance-cli",
     "trance-plugins-all",
-    "trance-applet",
+    "// applet lives in idlescreen/app-cosmic"
 ];
 
 fn run_cmd(cmd: &mut Command) -> Result<(), String> {

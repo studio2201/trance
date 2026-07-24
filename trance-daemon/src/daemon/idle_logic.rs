@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use wayland_present::OverlayPresenter;
 
+use super::idle_decision::{IdlePolicyInput, PresentationDecision, decide_presentation};
 use super::presentation::{
     ActivePresentation, current_time_micros, pick_saver_name, start_presentation, stop_presentation,
 };
@@ -21,80 +22,46 @@ pub fn update_presentation_state(
     session_locked: bool,
     inhibited: bool,
 ) {
-    clear_stale_presentation(overlay_presenter, presentation, preview_name, current_saver);
-    drive_presentation_chain(
-        overlay_presenter,
-        presentation,
-        preview_name,
-        current_saver,
-        config,
+    let input = IdlePolicyInput {
+        is_active: presentation.is_active(),
+        surface_visible: overlay_presenter.is_visible(),
+        current_saver: current_saver.as_str(),
+        preview_name: preview_name.as_deref(),
+        idle_enabled: config.idle_enabled,
         system_idle,
         session_locked,
         inhibited,
-    );
-}
-
-fn clear_stale_presentation(
-    overlay_presenter: &Arc<OverlayPresenter>,
-    presentation: &mut ActivePresentation,
-    preview_name: &mut Option<String>,
-    current_saver: &mut String,
-) {
-    if presentation.is_active() && !overlay_presenter.is_visible() {
-        stop_presentation(Some(overlay_presenter), presentation);
-        current_saver.clear();
-        *preview_name = None;
-    }
-}
-
-fn drive_presentation_chain(
-    overlay_presenter: &Arc<OverlayPresenter>,
-    presentation: &mut ActivePresentation,
-    preview_name: &mut Option<String>,
-    current_saver: &mut String,
-    config: &DaemonConfig,
-    system_idle: bool,
-    session_locked: bool,
-    inhibited: bool,
-) {
-    if session_locked || inhibited {
-        if presentation.is_active() {
-            stop_presentation(Some(overlay_presenter), presentation);
-            current_saver.clear();
+    };
+    let idle_name = pick_saver_name(config, current_time_micros());
+    match decide_presentation(input, &idle_name) {
+        PresentationDecision::Hold => {}
+        PresentationDecision::Stop { clear_preview } => {
+            if presentation.is_active() {
+                stop_presentation(Some(overlay_presenter), presentation);
+                current_saver.clear();
+                if !system_idle && preview_name.is_none() {
+                    tracing::info!("system activity detected. presentation stopped.");
+                }
+            }
+            if clear_preview {
+                *preview_name = None;
+            }
         }
-        *preview_name = None;
-    } else if let Some(name) = preview_name.clone() {
-        if presentation.is_active() && current_saver != &name {
-            stop_presentation(Some(overlay_presenter), presentation);
-            current_saver.clear();
+        PresentationDecision::Start { name, reason } => {
+            if presentation.is_active() && current_saver.as_str() != name.as_str() {
+                stop_presentation(Some(overlay_presenter), presentation);
+                current_saver.clear();
+            }
+            if !presentation.is_active() {
+                start_presentation(
+                    overlay_presenter,
+                    presentation,
+                    current_saver,
+                    name,
+                    reason,
+                    config,
+                );
+            }
         }
-        if !presentation.is_active() {
-            start_presentation(
-                overlay_presenter,
-                presentation,
-                current_saver,
-                name,
-                "preview",
-                config,
-            );
-        }
-    } else if config.idle_enabled && system_idle && !presentation.is_active() {
-        let seed_micros = current_time_micros();
-        let saver_name = pick_saver_name(config, seed_micros);
-        start_presentation(
-            overlay_presenter,
-            presentation,
-            current_saver,
-            saver_name,
-            "idle",
-            config,
-        );
-    } else if presentation.is_active() && !system_idle && preview_name.is_none() {
-        stop_presentation(Some(overlay_presenter), presentation);
-        current_saver.clear();
-        tracing::info!("system activity detected. presentation stopped.");
-    } else if !config.idle_enabled && presentation.is_active() {
-        stop_presentation(Some(overlay_presenter), presentation);
-        current_saver.clear();
     }
 }

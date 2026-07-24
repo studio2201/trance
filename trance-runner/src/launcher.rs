@@ -15,6 +15,8 @@ pub enum PluginError {
     LoadFailure(#[from] libloading::Error),
     #[error("symbol '{0}' not found in plugin")]
     SymbolMissing(&'static str),
+    #[error("plugin API version {found} incompatible with host {expected}")]
+    ApiVersionMismatch { found: u32, expected: u32 },
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
 }
@@ -243,3 +245,8 @@ pub fn resolve_saver_binary(name: &str, mode: &LaunchMode) -> std::io::Result<Pa
 #[cfg(test)]
 #[path = "launcher_tests.rs"]
 mod tests;
+
+
+#[cfg(test)]
+#[path = "launcher_proptest.rs"]
+mod proptests;

@@ -1,6 +1,6 @@
 [package]
 name = "trance-api"
-version = "1.0.39"
+version = "1.0.40"
 edition = "2024"
 description = "Lightweight shared API definitions, traits, and math utilities for terminal screensaver plugins."
 license = "Apache-2.0"

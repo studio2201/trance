@@ -23,7 +23,7 @@ pub fn print_usage() {
            stop                    Stop preview or idle presentation\n\
            fps-overlay (fps) on|off|status\n\
            render-scale (scale) <0.25-1.0>|default|status\n\
-           doctor (doc) [--fix|-f] Diagnostics; --fix reloads user service\n\
+           doctor (doc) [--fix|-f] [--json|-j] Diagnostics; --fix reloads user service; --json machine report\n\
            config (cfg) get|set|list\n\
            completion bash|zsh     Shell tab-completion scripts\n\
            clean                   Clean stale runs and log caches\n\

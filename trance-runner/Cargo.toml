@@ -1,6 +1,6 @@
 [package]
 name = "trance-runner"
-version = "1.0.39"
+version = "1.0.40"
 edition = "2024"
 description = "Shared runner logic for the terminal screensavers"
 license = "Apache-2.0"
@@ -24,3 +24,6 @@ landlock = { workspace = true }
 wgpu = "28.0.0"
 bytemuck = { version = "1.25.1", features = ["derive"] }
 futures-lite = { workspace = true }
+
+[dev-dependencies]
+proptest = "1"

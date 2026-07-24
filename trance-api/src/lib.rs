@@ -26,6 +26,9 @@
 //! let _ = rng.next_u64();
 //! ```
 
+/// Host/plugin API major version. Plugins may export `trance_api_version() -> u32`.
+pub const API_VERSION: u32 = 1;
+
 mod callbacks;
 mod caption;
 mod color;

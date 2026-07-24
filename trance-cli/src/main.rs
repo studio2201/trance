@@ -104,7 +104,8 @@ fn run(args: Vec<String>) -> Result<()> {
         }
         "doctor" | "doc" => {
             let fix = rest.iter().any(|a| a == "--fix" || a == "-f");
-            return doctor::run_doctor(fix);
+            let json = rest.iter().any(|a| a == "--json" || a == "-j");
+            return doctor::run_doctor(fix, json);
         }
         "clean" => return clean::handle_clean(),
         "completion" => return completion::handle_completion(rest),

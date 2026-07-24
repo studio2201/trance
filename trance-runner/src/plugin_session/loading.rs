@@ -64,7 +64,15 @@ impl PluginSession {
 
             // Eagerly set OS and logo text environment variables so plugins can read them
             // even inside the Landlock sandbox.
-            let sys_info = crate::toolkit::sys_info::get_system_info();
+            // Propagate export determinism if seed already set by idle-render.
+            if std::env::var_os("IDLE_RENDER_SEED").is_some() {
+                std::env::set_var("TRANCE_EXPORT_MODE", "1");
+            }
+            let sys_info = if trance_api::SystemInfo::export_mode_enabled() {
+                trance_api::SystemInfo::export_fixture()
+            } else {
+                crate::toolkit::sys_info::get_system_info()
+            };
             std::env::set_var("TRANCE_OS_NAME", &sys_info.os);
             std::env::set_var("TRANCE_LOGO_TEXT", &sys_info.logo_text);
 
@@ -72,6 +80,23 @@ impl PluginSession {
             crate::caption_overlay::init_font();
             if let Err(e) = crate::sandbox::enforce_sandbox() {
                 tracing::warn!("Could not enforce Landlock sandbox: {e}");
+            }
+
+            // Optional ABI negotiation: missing symbol => assume host-compatible legacy.
+            match lib.get::<unsafe extern "C" fn() -> u32>(b"trance_api_version") {
+                Ok(ver_fn) => {
+                    let found = ver_fn();
+                    let expected = trance_api::API_VERSION;
+                    if found != expected {
+                        return Err(PluginError::ApiVersionMismatch { found, expected });
+                    }
+                    tracing::info!(found, expected, "plugin API version ok");
+                }
+                Err(_) => {
+                    tracing::debug!(
+                        "plugin has no trance_api_version symbol; assuming host-compatible"
+                    );
+                }
             }
 
             let create_fn: libloading::Symbol<unsafe extern "C" fn() -> *mut ScreensaverInstance> =

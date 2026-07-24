@@ -104,6 +104,10 @@ fn prepare_frame(state: &mut FrameLoopState) -> Result<(), String> {
     state.last_frame = frame_start;
     state.frame_start = frame_start;
     for s in state.sessions.iter_mut() {
+        if !s.session.is_plugin_alive() {
+            s.session.recover(s.cols, s.rows)?;
+            s.session.set_simulation_rate(state.tick_hz);
+        }
         s.session.tick(frame_dt);
     }
     Ok(())

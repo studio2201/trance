@@ -9,11 +9,11 @@ Modular Wayland-native screensaver and ambient display daemon for Linux, written
 
 | | |
 |---|---|
-| Brand | [idlescreen/brand](https://github.com/idlescreen/idle-brand) |
+| Brand | [idlescreen/idle-brand](https://github.com/idlescreen/idle-brand) |
 | Packages | [idlescreen.github.io/packages](https://idlescreen.github.io/packages/) |
 | Org | [idlescreen](https://github.com/idlescreen) |
 | Plugins | [official plugins](https://github.com/orgs/idlescreen/repositories?q=saver-) |
-| Optional applet | [idlescreen/app-cosmic](https://github.com/idlescreen/idle-core-applet) |
+| Optional applet | [idlescreen/app-cosmic](https://github.com/idlescreen/app-cosmic) |
 
 ## Install (native packages)
 
@@ -42,14 +42,14 @@ Shipped package and binary names remain `trance` / `trance-*` for install and
 API stability.
 
 Optional packages: `trance-plugins-all`, `trance-cli` (TUI: [idle-tui](https://github.com/idlescreen/idle-tui)). COSMIC panel
-users can install [app-cosmic](https://github.com/idlescreen/idle-core-applet)
+users can install [app-cosmic](https://github.com/idlescreen/app-cosmic)
 separately.
 
 ## Build from source
 
 ```bash
 git clone https://github.com/idlescreen/idle-core.git
-cd idlescreen
+cd idle-core
 cargo build --release -p trance-daemon -p trance-cli
 ```
 

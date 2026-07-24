@@ -28,9 +28,45 @@ pub fn check_wayland() -> CheckResult {
         }
         _ => {
             println!(" [✗] Environment: WAYLAND_DISPLAY is not set!");
-            println!("     -> Trance requires a Wayland session (e.g., Pop!_OS COSMIC).");
+            println!("     -> IdleScreen requires a Wayland session (e.g., Pop!_OS COSMIC).");
             chk("Environment", false, "WAYLAND_DISPLAY missing")
         }
+    }
+}
+
+
+/// Soft protocol/DE hints for degraded environments (does not fail alone on unknown DE).
+pub fn check_protocol_hints() -> CheckResult {
+    let de = std::env::var("XDG_CURRENT_DESKTOP").unwrap_or_default();
+    let wayland = std::env::var("WAYLAND_DISPLAY").is_ok();
+    if !wayland {
+        return chk(
+            "Protocols",
+            false,
+            "WAYLAND_DISPLAY unset; need Wayland session with ext-idle-notify-v1 and zwlr_layer_shell_v1",
+        );
+    }
+    let known = ["cosmic", "Hyprland", "sway", "niri", "river", "wayfire", "KDE", "plasma"];
+    let lower = de.to_ascii_lowercase();
+    let friendly = known.iter().any(|k| lower.contains(&k.to_ascii_lowercase()));
+    if friendly || de.is_empty() {
+        chk(
+            "Protocols",
+            true,
+            format!(
+                "WAYLAND_DISPLAY set; DE='{}' (need idle-notify + layer-shell)",
+                if de.is_empty() { "unknown" } else { &de }
+            ),
+        )
+    } else {
+        // Pass with caution — GNOME often lacks classic screensaver slots.
+        chk(
+            "Protocols",
+            true,
+            format!(
+                "WAYLAND_DISPLAY set; DE='{de}' may lack layer-shell or idle-notify — doctor cannot probe protocols without a live compositor connection"
+            ),
+        )
     }
 }
 
@@ -38,7 +74,7 @@ pub fn check_dbus() -> CheckResult {
     if let Ok(client) = TranceClient::connect() {
         match client.get_status() {
             Ok(status) => {
-                println!(" [✔] D-Bus Service: Connected to org.crateria.Trance via D-Bus.");
+                println!(" [✔] D-Bus Service: Connected to io.github.ubermetroid.trance via D-Bus.");
                 println!(
                     "     -> Status: idle_enabled={}, timeout={}m, active_saver='{}'",
                     status.idle_enabled, status.idle_timeout_mins, status.active_saver
@@ -55,7 +91,7 @@ pub fn check_dbus() -> CheckResult {
             }
         }
     } else {
-        println!(" [✗] D-Bus Service: Could not connect to org.crateria.Trance via D-Bus.");
+        println!(" [✗] D-Bus Service: Could not connect to io.github.ubermetroid.trance via D-Bus.");
         println!(
             "     -> Fix: Ensure trance-daemon is running (systemctl --user start trance-daemon)."
         );
