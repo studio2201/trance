@@ -8,7 +8,7 @@
 
 ## ⚡ Quick Install
 
-> 📦 **Supported Linux Distributions:** **Fedora**, **RHEL / Rocky / CentOS**, **Ubuntu**, **Debian**, **Pop!_OS**
+> 📦 **Supported Linux Distributions:** **Arch**, **Debian**, **Fedora**
 
 ```bash
 curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
@@ -21,17 +21,14 @@ curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
 If you prefer to manually configure your package manager:
 
 <details>
-<summary><b>Fedora / RHEL / CentOS Stream (DNF)</b></summary>
+<summary><b>Arch Linux (`makepkg`)</b></summary>
 
 <br>
 
 ```bash
-# Add DNF Repository
-sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo -o /etc/yum.repos.d/idlescreen.repo
-
-# Refresh Metadata & Install Product
-sudo dnf check-update
-sudo dnf install idlescreen
+git clone https://github.com/idlescreen/packages.git
+cd packages/arch
+makepkg -si
 ```
 </details>
 
@@ -53,14 +50,17 @@ sudo apt install idlescreen
 </details>
 
 <details>
-<summary><b>Arch Linux (`makepkg`)</b></summary>
+<summary><b>Fedora / RHEL / CentOS Stream (DNF)</b></summary>
 
 <br>
 
 ```bash
-git clone https://github.com/idlescreen/packages.git
-cd packages/arch
-makepkg -si
+# Add DNF Repository
+sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo -o /etc/yum.repos.d/idlescreen.repo
+
+# Refresh Metadata & Install Product
+sudo dnf check-update
+sudo dnf install idlescreen
 ```
 </details>
 
