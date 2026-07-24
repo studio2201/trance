@@ -22,7 +22,7 @@ IdleScreen's core lane is:
 - **Below the line:** saver effect math (`update` / `draw`).
 
 Offline export (`render`) reuses the pure side (plugins + raster) and does
-not require a compositor. Platform apps (`idle-cosmic`, future `app-kde`, etc.)
+not require a compositor. Platform apps (`idle-cosmic`, etc.)
 are DE-shaped clients of the control plane, not a second display server.
 
 ## Stack lanes
