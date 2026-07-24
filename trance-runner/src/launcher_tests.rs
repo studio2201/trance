@@ -11,7 +11,7 @@ fn sanitize_accepts_clean_names() {
         Some("beams".to_string())
     );
     assert_eq!(
-        sanitize_saver_name("screenidle-saver-storm"),
+        sanitize_saver_name("screensaver-storm"),
         Some("storm".to_string())
     );
 }
@@ -115,9 +115,17 @@ fn sanitize_accepts_alphanumeric_and_dash() {
 }
 
 #[test]
+fn sanitize_strips_idle_saver_package_prefix() {
+    assert_eq!(
+        sanitize_saver_name("idle-saver-beams"),
+        Some("beams".to_string())
+    );
+}
+
+#[test]
 fn sanitize_strips_screensaver_prefix_only() {
     assert_eq!(
-        sanitize_saver_name("screenidle-saver-bursts"),
+        sanitize_saver_name("screensaver-bursts"),
         Some("bursts".to_string())
     );
     assert_eq!(

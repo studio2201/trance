@@ -62,6 +62,10 @@ pub fn sanitize_saver_name(raw: &str) -> Option<String> {
     if stem.starts_with("screensaver-") {
         stem = stem["screensaver-".len()..].to_string();
     }
+    // Package name form: idle-saver-beams → beams
+    if stem.starts_with("idle-saver-") {
+        stem = stem["idle-saver-".len()..].to_string();
+    }
 
     if !stem.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
         return None;

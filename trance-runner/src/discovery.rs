@@ -9,15 +9,15 @@ use std::path::PathBuf;
 /// used when no system plugin exists, but cannot shadow a package-installed
 /// `.so` of the same allowlisted name.
 pub fn get_screensaver_dirs() -> Vec<PathBuf> {
-    let mut dirs = Vec::new();
-
-    // 1. System canonical paths (IdleScreen first; trance legacy still searched)
-    dirs.push(PathBuf::from("/usr/libexec/idle/screensavers"));
-    dirs.push(PathBuf::from("/usr/local/libexec/idle/screensavers"));
-    dirs.push(PathBuf::from("/usr/libexec/idlescreen/screensavers"));
-    dirs.push(PathBuf::from("/usr/local/libexec/idlescreen/screensavers"));
-    dirs.push(PathBuf::from("/usr/libexec/trance/screensavers"));
-    dirs.push(PathBuf::from("/usr/local/libexec/trance/screensavers"));
+    // 1. System canonical paths (idle first; legacy idlescreen/trance still searched)
+    let mut dirs = vec![
+        PathBuf::from("/usr/libexec/idle/screensavers"),
+        PathBuf::from("/usr/local/libexec/idle/screensavers"),
+        PathBuf::from("/usr/libexec/idlescreen/screensavers"),
+        PathBuf::from("/usr/local/libexec/idlescreen/screensavers"),
+        PathBuf::from("/usr/libexec/trance/screensavers"),
+        PathBuf::from("/usr/local/libexec/trance/screensavers"),
+    ];
 
     // 2. System paths from XDG_DATA_DIRS
     let xdg_data_dirs = std::env::var("XDG_DATA_DIRS")
@@ -127,5 +127,25 @@ mod tests {
                 "system dirs must be searched before user dirs: {dirs:?}"
             );
         }
+    }
+
+    #[test]
+    fn idle_system_path_is_first() {
+        let dirs = get_screensaver_dirs();
+        assert_eq!(
+            dirs.first().map(|p| p.as_os_str()),
+            Some(std::ffi::OsStr::new("/usr/libexec/idle/screensavers")),
+            "canonical idle path must win over legacy trees: {dirs:?}"
+        );
+    }
+
+    #[test]
+    fn legacy_trance_path_still_searched() {
+        let dirs = get_screensaver_dirs();
+        assert!(
+            dirs.iter().any(|p| p.ends_with("trance/screensavers")
+                || p.as_os_str() == "/usr/libexec/trance/screensavers"),
+            "legacy trance plugin trees must remain for upgrades: {dirs:?}"
+        );
     }
 }
