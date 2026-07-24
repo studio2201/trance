@@ -8,7 +8,7 @@
 
 ## ⚡ Quick Install
 
-Run this single command in your terminal on Fedora, RHEL, Ubuntu, Debian, or Pop!_OS:
+> 📦 **Supported Linux Distributions:** **Fedora**, **RHEL / Rocky / CentOS**, **Ubuntu**, **Debian**, **Pop!_OS**
 
 ```bash
 curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
