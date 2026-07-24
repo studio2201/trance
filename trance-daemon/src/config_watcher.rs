@@ -1,7 +1,14 @@
 // SPDX-License-Identifier: MIT
 
+//! Hot-reload `~/.config/trance/config.yaml` without a Tokio runtime.
+//!
+//! The daemon main path is not Tokio-driven; only the D-Bus thread owns a
+//! runtime. Keep the notify watcher on a plain OS thread so startup cannot
+//! panic with "there is no reactor running".
+
 use notify::{Event, EventKind, RecursiveMode, Watcher};
 use std::sync::Arc;
+use std::thread;
 use std::time::Duration;
 
 use crate::config::DaemonConfig;
@@ -46,10 +53,26 @@ pub fn start_config_watcher(controller: Arc<DaemonController>) {
         return;
     }
 
-    tokio::spawn(async move {
-        let _watcher = watcher;
-        loop {
-            tokio::time::sleep(Duration::from_hours(1)).await;
-        }
-    });
+    // Retain the watcher for process lifetime without requiring a Tokio runtime.
+    thread::Builder::new()
+        .name("trance-config-watch".into())
+        .spawn(move || {
+            let _watcher = watcher;
+            loop {
+                thread::sleep(Duration::from_hours(1));
+            }
+        })
+        .ok();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn start_config_watcher_does_not_panic_without_tokio() {
+        // No Tokio Handle in this thread — must not abort.
+        let controller = Arc::new(DaemonController::new(DaemonConfig::default()));
+        start_config_watcher(controller);
+    }
 }
